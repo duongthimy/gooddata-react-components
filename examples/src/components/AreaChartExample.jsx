@@ -13,12 +13,7 @@ import {
     franchiseFeesIdentifierOngoingRoyalty,
 } from "../utils/fixtures";
 
-const measures = [
-    Model.measure(franchiseFeesIdentifier).format("#,##0"),
-    Model.measure(franchiseFeesAdRoyaltyIdentifier).format("#,##0"),
-    Model.measure(franchiseFeesInitialFranchiseFeeIdentifier).format("#,##0"),
-    Model.measure(franchiseFeesIdentifierOngoingRoyalty).format("#,##0"),
-];
+const measures = [Model.measure(franchiseFeesIdentifier).format("#,##0")];
 
 const viewBy = Model.attribute(monthDateIdentifier);
 
