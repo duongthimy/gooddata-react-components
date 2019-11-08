@@ -1,16 +1,20 @@
 // (C) 2007-2018 GoodData Corporation
-import * as React from 'react';
-import { IntlProvider } from 'react-intl';
-import { DEFAULT_LOCALE, messagesMap } from '../../core/base/IntlWrapper';
+import * as React from "react";
+import { IntlProvider } from "react-intl";
+import { messagesMap } from "../../core/base/IntlWrapper";
+import { DEFAULT_LOCALE } from "../../../constants/localization";
 
 export function createIntlMock(customMessages = {}) {
-    const intlProvider = new IntlProvider({
-        locale: 'en-US',
-        messages: {
-            ...messagesMap['en-US'],
-            ...customMessages
-        }
-    }, {});
+    const intlProvider = new IntlProvider(
+        {
+            locale: "en-US",
+            messages: {
+                ...messagesMap["en-US"],
+                ...customMessages,
+            },
+        },
+        {},
+    );
     const { intl } = intlProvider.getChildContext();
     return intl;
 }

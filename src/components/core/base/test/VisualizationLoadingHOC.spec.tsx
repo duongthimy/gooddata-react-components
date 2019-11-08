@@ -1,66 +1,64 @@
 // (C) 2007-2018 GoodData Corporation
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
-import { mount } from 'enzyme';
-import noop = require('lodash/noop');
-import { testUtils } from '@gooddata/js-utils';
-import sdk, { IExportConfig } from '@gooddata/gooddata-js';
+import * as React from "react";
+import * as PropTypes from "prop-types";
+import { mount } from "enzyme";
+import noop = require("lodash/noop");
+import { testUtils } from "@gooddata/js-utils";
+import sdk, { IExportConfig } from "@gooddata/gooddata-js";
 import {
     emptyDataSource,
     oneMeasureDataSource,
     oneMeasurePagableOnlyDataSource,
     oneMeasureOneDimensionDataSource,
+    oneAttributeOneMeasureOneFilterDataSource,
     tooLargeDataSource,
     executionObjectWithTotalsDataSource,
     LoadingComponent,
-    ErrorComponent
-} from '../../../tests/mocks';
+    ErrorComponent,
+} from "../../../tests/mocks";
 
-import 'jest';
+import "jest";
 
 import {
     ICommonVisualizationProps,
     ILoadingInjectedProps,
     visualizationLoadingHOC,
-    commonDefaultProps
-} from '../VisualizationLoadingHOC';
-import { oneMeasureResponse } from '../../../../execution/fixtures/ExecuteAfm.fixtures';
-import { IDrillableItem } from '../../../../interfaces/DrillEvents';
-import { IExportFunction } from '../../../../interfaces/Events';
-import { IDataSourceProviderInjectedProps } from '../../../afm/DataSourceProvider';
-import { RuntimeError } from '../../../../errors/RuntimeError';
-import { ErrorStates } from '../../../../constants/errorStates';
+    commonDefaultProps,
+} from "../VisualizationLoadingHOC";
+import { oneMeasureResponse } from "../../../../execution/fixtures/ExecuteAfm.fixtures";
+import { IDrillableItem } from "../../../../interfaces/DrillEvents";
+import { IExportFunction, IExtendedExportConfig } from "../../../../interfaces/Events";
+import { IDataSourceProviderInjectedProps } from "../../../afm/DataSourceProvider";
+import { RuntimeError } from "../../../../errors/RuntimeError";
+import { ErrorStates } from "../../../../constants/errorStates";
+
+const CSV = "csv";
+const XLSX = "xlsx";
 
 export interface ITestInnerComponentProps extends ICommonVisualizationProps {
     customPropFooBar?: number;
 }
 
-class TestInnerComponent
-    extends React.Component<ITestInnerComponentProps & ILoadingInjectedProps & IDataSourceProviderInjectedProps> {
-
-    public static defaultProps:
-        Partial<ITestInnerComponentProps & ILoadingInjectedProps & IDataSourceProviderInjectedProps> = {
-            ...commonDefaultProps,
-            customPropFooBar: 123
-        };
+class TestInnerComponent extends React.Component<
+    ITestInnerComponentProps & ILoadingInjectedProps & IDataSourceProviderInjectedProps
+> {
+    public static defaultProps: Partial<
+        ITestInnerComponentProps & ILoadingInjectedProps & IDataSourceProviderInjectedProps
+    > = {
+        ...commonDefaultProps,
+        customPropFooBar: 123,
+    };
 
     public static propTypes = {
-        customPropFooBar: PropTypes.number
+        customPropFooBar: PropTypes.number,
     };
 
     public componentWillMount() {
-        const {
-            getPage,
-            resultSpec = {}
-        } = this.props;
+        const { getPage, resultSpec = {} } = this.props;
         // we get getPage is available, we assume this is a pagable component
         // and therefor should not get autoexecuted datasource
         if (getPage) {
-            getPage(
-                resultSpec,
-                [0, 500],
-                [0, 500]
-            );
+            getPage(resultSpec, [0, 500], [0, 500]);
         }
     }
 
@@ -69,26 +67,25 @@ class TestInnerComponent
     }
 }
 
-describe('VisualizationLoadingHOC', () => {
-
-    const PROJECT_ID = 'prID';
-    const createComponent =
-    (
+describe("VisualizationLoadingHOC", () => {
+    const PROJECT_ID = "prID";
+    const createComponent = (
         customProps: Partial<ITestInnerComponentProps & IDataSourceProviderInjectedProps> = {},
-        autoExecuteDataSource = true
+        autoExecuteDataSource = true,
     ) => {
         const props = {
             dataSource: oneMeasureDataSource,
             projectId: PROJECT_ID,
             sdk,
-            ...customProps
+            ...customProps,
         };
         const WrappedComponent = visualizationLoadingHOC(TestInnerComponent, autoExecuteDataSource);
-        return mount<ITestInnerComponentProps & IDataSourceProviderInjectedProps & ICommonVisualizationProps>
-        (<WrappedComponent {...props} />);
+        return mount<ITestInnerComponentProps & IDataSourceProviderInjectedProps & ICommonVisualizationProps>(
+            <WrappedComponent {...props} />,
+        );
     };
 
-    it('should render the inner component passing down all the external properties', () => {
+    it("should render the inner component passing down all the external properties", () => {
         const props = {
             resultSpec: {},
             onLoadingChanged: jest.fn(),
@@ -96,9 +93,9 @@ describe('VisualizationLoadingHOC', () => {
             LoadingComponent,
             afterRender: jest.fn(),
             pushData: jest.fn(),
-            locale: 'en-USA',
+            locale: "en-USA",
             drillableItems: [] as IDrillableItem[],
-            onFiredDrillEvent: jest.fn()
+            onFiredDrillEvent: jest.fn(),
         };
         const wrapper = createComponent(props);
 
@@ -110,30 +107,30 @@ describe('VisualizationLoadingHOC', () => {
         });
     });
 
-    it('should init loading automatically', () => {
+    it("should init loading automatically", () => {
         let onLoadingChanged;
-        const startedLoading = new Promise((resolve) => {
+        const startedLoading = new Promise(resolve => {
             onLoadingChanged = resolve;
         });
 
         const wrapper = createComponent({
             LoadingComponent,
-            onLoadingChanged
+            onLoadingChanged,
         });
 
         return startedLoading.then(() => {
             const innerWrapped = wrapper.find(TestInnerComponent);
             expect(innerWrapped.props()).toMatchObject({
                 isLoading: true,
-                execution: null
+                execution: null,
             });
         });
     });
 
-    it('should init loading automatically and pass execution to the inner component when obtained result', () => {
+    it("should init loading automatically and pass execution to the inner component when obtained result", () => {
         const onLoadingChanged = jest.fn();
         const wrapper = createComponent({
-            onLoadingChanged
+            onLoadingChanged,
         });
 
         expect(onLoadingChanged).toHaveBeenCalledTimes(1);
@@ -143,34 +140,34 @@ describe('VisualizationLoadingHOC', () => {
             const innerWrapped = wrapper.find(TestInnerComponent);
             expect(innerWrapped.props()).toMatchObject({
                 isLoading: false,
-                execution: oneMeasureResponse
+                execution: oneMeasureResponse,
             });
         });
     });
 
-    it('should pass down error flag when execution failed', () => {
-        const consoleErrorSpy = jest.spyOn(global.console, 'error');
+    it("should pass down error flag when execution failed", () => {
+        const consoleErrorSpy = jest.spyOn(global.console, "error");
         consoleErrorSpy.mockImplementation(jest.fn());
 
         const wrapper = createComponent({
             dataSource: tooLargeDataSource,
-            ErrorComponent
+            ErrorComponent,
         });
 
         return testUtils.delay().then(() => {
             wrapper.update();
             const innerWrapped = wrapper.find(TestInnerComponent);
-            expect(innerWrapped.props().error).toEqual('DATA_TOO_LARGE_TO_COMPUTE');
+            expect(innerWrapped.props().error).toEqual("DATA_TOO_LARGE_TO_COMPUTE");
 
             consoleErrorSpy.mockRestore();
         });
     });
 
-    it('should call onError then when error occured', () => {
+    it("should call onError then when error occured", () => {
         const onError = jest.fn();
         createComponent({
             dataSource: tooLargeDataSource,
-            onError
+            onError,
         });
 
         return testUtils.delay().then(() => {
@@ -180,12 +177,12 @@ describe('VisualizationLoadingHOC', () => {
         });
     });
 
-    it('should show EmptyResultError when exporting NO DATA result', async (done) => {
+    it("should show EmptyResultError when exporting NO DATA result", async done => {
         const onExportReady = async (exportResult: IExportFunction) => {
             try {
-                await exportResult({ format: 'xlsx' });
+                await exportResult({ format: XLSX });
             } catch (error) {
-                expect(error.cause.name).toEqual('EmptyResultError');
+                expect(error.cause.name).toEqual("EmptyResultError");
                 expect(error).toEqual(new RuntimeError(ErrorStates.NO_DATA));
             }
             done();
@@ -193,14 +190,14 @@ describe('VisualizationLoadingHOC', () => {
         createComponent({
             dataSource: emptyDataSource,
             onExportReady,
-            onError: noop
+            onError: noop,
         });
     });
 
-    it('should not reload on new props when data source is equal and resultSpec did not change', () => {
+    it("should not reload on new props when data source is equal and resultSpec did not change", () => {
         const onLoadingChanged = jest.fn();
         const wrapper = createComponent({
-            onLoadingChanged
+            onLoadingChanged,
         });
 
         return testUtils.delay().then(() => {
@@ -208,7 +205,7 @@ describe('VisualizationLoadingHOC', () => {
 
             wrapper.setProps({
                 dataSource: oneMeasureDataSource,
-                onLoadingChanged
+                onLoadingChanged,
             });
 
             return testUtils.delay().then(() => {
@@ -217,10 +214,10 @@ describe('VisualizationLoadingHOC', () => {
         });
     });
 
-    it('should reload on new props when resultSpec changed', () => {
+    it("should reload on new props when resultSpec changed", () => {
         const onLoadingChanged = jest.fn();
         const wrapper = createComponent({
-            onLoadingChanged
+            onLoadingChanged,
         });
 
         return testUtils.delay().then(() => {
@@ -230,7 +227,7 @@ describe('VisualizationLoadingHOC', () => {
             wrapper.setProps({
                 dataSource: oneMeasureDataSource,
                 onLoadingChanged,
-                resultSpec: { dimensions: [] }
+                resultSpec: { dimensions: [] },
             });
 
             return testUtils.delay().then(() => {
@@ -239,10 +236,10 @@ describe('VisualizationLoadingHOC', () => {
         });
     });
 
-    it('should reload when dataSource changed', () => {
+    it("should reload when dataSource changed", () => {
         const onLoadingChanged = jest.fn();
         const wrapper = createComponent({
-            onLoadingChanged
+            onLoadingChanged,
         });
 
         return testUtils.delay().then(() => {
@@ -252,7 +249,7 @@ describe('VisualizationLoadingHOC', () => {
             wrapper.setProps({
                 dataSource: executionObjectWithTotalsDataSource,
                 onLoadingChanged,
-                resultSpec: { dimensions: [] }
+                resultSpec: { dimensions: [] },
             });
 
             return testUtils.delay().then(() => {
@@ -261,10 +258,10 @@ describe('VisualizationLoadingHOC', () => {
         });
     });
 
-    it('should call onError when inner component fired Data too large for display', () => {
+    it("should call onError when inner component fired Data too large for display", () => {
         const onError = jest.fn();
         const wrapper = createComponent({
-            onError
+            onError,
         });
 
         return testUtils.delay().then(() => {
@@ -279,10 +276,10 @@ describe('VisualizationLoadingHOC', () => {
         });
     });
 
-    it('provides default onError property which is logging to the console', () => {
+    it("provides default onError property which is logging to the console", () => {
         const wrapper = createComponent();
 
-        const consoleErrorSpy = jest.spyOn(global.console, 'error');
+        const consoleErrorSpy = jest.spyOn(global.console, "error");
 
         consoleErrorSpy.mockImplementation(jest.fn());
 
@@ -293,39 +290,40 @@ describe('VisualizationLoadingHOC', () => {
             inner.props().onDataTooLarge();
 
             expect(consoleErrorSpy).toHaveBeenCalled();
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Error in execution:',
-                { error: new RuntimeError(ErrorStates.DATA_TOO_LARGE_TO_DISPLAY) });
+            expect(consoleErrorSpy).toHaveBeenCalledWith("Error in execution:", {
+                error: new RuntimeError(ErrorStates.DATA_TOO_LARGE_TO_DISPLAY),
+            });
 
             consoleErrorSpy.mockRestore();
         });
     });
 
-    it('should call pushData callback with execution result', () => {
+    it("should call pushData callback with execution result", () => {
         const pushData = jest.fn();
         createComponent({
-            pushData
+            pushData,
         });
 
         return testUtils.delay().then(() => {
             expect(pushData).toHaveBeenCalledWith({
-                result: oneMeasureResponse
+                result: oneMeasureResponse,
             });
         });
     });
 
-    it('should be able to restore after rejected datasource', () => {
+    it("should be able to restore after rejected datasource", () => {
         const onError = jest.fn();
         const pushData = jest.fn();
         const wrapper = createComponent({
             onError,
             pushData,
-            dataSource: tooLargeDataSource
+            dataSource: tooLargeDataSource,
         });
 
         return testUtils.delay().then(() => {
             wrapper.update();
             wrapper.setProps({
-                dataSource: oneMeasureDataSource
+                dataSource: oneMeasureDataSource,
             });
 
             return testUtils.delay().then(() => {
@@ -334,16 +332,16 @@ describe('VisualizationLoadingHOC', () => {
 
                 expect(innerWrapped.props()).toMatchObject({
                     isLoading: false,
-                    execution: oneMeasureResponse
+                    execution: oneMeasureResponse,
                 });
             });
         });
     });
 
-    it('should call onError when inner component fired onNegativeValues', () => {
+    it("should call onError when inner component fired onNegativeValues", () => {
         const onError = jest.fn();
         const wrapper = createComponent({
-            onError
+            onError,
         });
 
         return testUtils.delay().then(() => {
@@ -357,57 +355,69 @@ describe('VisualizationLoadingHOC', () => {
         });
     });
 
-    describe('with autoExecuteDataSource disabled', () => {
-        it('should not init loading automatically', () => {
-            const wrapper = createComponent({
-                LoadingComponent
-            }, false);
+    describe("with autoExecuteDataSource disabled", () => {
+        it("should not init loading automatically", () => {
+            const wrapper = createComponent(
+                {
+                    LoadingComponent,
+                },
+                false,
+            );
 
             const innerWrapped = wrapper.find(TestInnerComponent);
             expect(innerWrapped.props().execution).toBe(null);
         });
 
-        it('should call pushData with result from getPage', () => {
+        it("should call pushData with result from getPage", () => {
             const pushData = jest.fn();
             const onLoadingChanged = jest.fn();
-            createComponent({
-                pushData,
-                onLoadingChanged,
-                dataSource: oneMeasurePagableOnlyDataSource
-            }, false);
+            createComponent(
+                {
+                    pushData,
+                    onLoadingChanged,
+                    dataSource: oneMeasurePagableOnlyDataSource,
+                },
+                false,
+            );
 
             return testUtils.delay().then(() => {
                 expect(pushData).toHaveBeenCalledWith({
-                    result: oneMeasureResponse
+                    result: oneMeasureResponse,
                 });
                 expect(onLoadingChanged).toHaveBeenCalledWith({ isLoading: false });
             });
         });
 
-        it('should pass down error flag when execution failed', () => {
-            const consoleErrorSpy = jest.spyOn(global.console, 'error');
+        it("should pass down error flag when execution failed", () => {
+            const consoleErrorSpy = jest.spyOn(global.console, "error");
             consoleErrorSpy.mockImplementation(jest.fn());
 
-            const wrapper = createComponent({
-                dataSource: tooLargeDataSource,
-                ErrorComponent
-            }, false);
+            const wrapper = createComponent(
+                {
+                    dataSource: tooLargeDataSource,
+                    ErrorComponent,
+                },
+                false,
+            );
 
             return testUtils.delay().then(() => {
                 wrapper.update();
                 const innerWrapped = wrapper.find(TestInnerComponent);
-                expect(innerWrapped.props().error).toEqual('DATA_TOO_LARGE_TO_COMPUTE');
+                expect(innerWrapped.props().error).toEqual("DATA_TOO_LARGE_TO_COMPUTE");
 
                 consoleErrorSpy.mockRestore();
             });
         });
 
-        it('should call onError when error occured', () => {
+        it("should call onError when error occured", () => {
             const onError = jest.fn();
-            createComponent({
-                dataSource: tooLargeDataSource,
-                onError
-            }, false);
+            createComponent(
+                {
+                    dataSource: tooLargeDataSource,
+                    onError,
+                },
+                false,
+            );
 
             return testUtils.delay().then(() => {
                 expect(onError).toHaveBeenCalledTimes(1);
@@ -416,7 +426,7 @@ describe('VisualizationLoadingHOC', () => {
             });
         });
 
-        it('getPage should return promise if component has been unmounted', async () => {
+        it("getPage should return promise if component has been unmounted", async () => {
             const wrapper = createComponent({}, false);
             const innerWrapped = wrapper.find(TestInnerComponent);
 
@@ -429,95 +439,121 @@ describe('VisualizationLoadingHOC', () => {
         });
     });
 
-    describe('Exporter', () => {
+    describe("Exporter", () => {
         beforeAll(() => {
             sdk.clone = jest.fn(() => sdk);
-            sdk.report.exportResult = jest.fn((_, __, exportConfig: IExportConfig) => {
-                if (exportConfig.format === 'xlsx') {
-                    return Promise.resolve({ uri: '/bar' });
-                }
-                return Promise.reject(new Error('Error!!!'));
-            });
+            sdk.report.exportResult = jest.fn(
+                (_projectId: string, _executionResult: string, exportConfig: IExportConfig) => {
+                    if (exportConfig.format === XLSX) {
+                        return Promise.resolve({ uri: "/bar" });
+                    }
+                    return Promise.reject(new Error("Error!!!"));
+                },
+            );
         });
 
         afterAll(() => {
             jest.resetAllMocks();
         });
 
-        it('should return URI when call exportResult successfully', (done) => {
+        it("should return URI when call exportResult successfully", done => {
             const onExportReady = async (exportResult: IExportFunction) => {
-                const result = await exportResult({ format: 'xlsx' });
-                expect(result.uri).toEqual('/bar');
+                const result = await exportResult({ format: XLSX });
+                expect(result.uri).toEqual("/bar");
                 done();
             };
             createComponent({
                 onExportReady,
-                dataSource: oneMeasureOneDimensionDataSource
+                dataSource: oneMeasureOneDimensionDataSource,
             });
         });
 
-        it('should return error when call exportResult fail', (done) => {
+        it("should return error when call exportResult fail", done => {
             const onExportReady = async (exportResult: IExportFunction) => {
                 try {
-                    await exportResult({ format: 'csv' });
+                    await exportResult({ format: CSV });
                 } catch (error) {
-                    expect(error.message).toEqual('Error!!!');
+                    expect(error.message).toEqual("Error!!!");
                     done();
                 }
             };
             createComponent({
                 onExportReady,
-                dataSource: oneMeasureOneDimensionDataSource
+                dataSource: oneMeasureOneDimensionDataSource,
             });
         });
 
-        it('should return the default file name', (done) => {
+        it("should return the applied filters", done => {
             const onExportReady = async (exportResult: IExportFunction) => {
-                await exportResult({ format: 'xlsx' });
-                expect(sdk.report.exportResult).toBeCalledWith(
-                    PROJECT_ID,
-                    'foo',
-                    { format: 'xlsx', title: 'Untitled' }
-                );
+                const executionResult =
+                    "/gdc/app/projects/storybook/executionResults/59908ac5f1bf7a4fbbf78b08a7d034ed?dimensions=2";
+                const extendedExportConfig: IExtendedExportConfig = {
+                    format: XLSX,
+                    includeFilterContext: true,
+                    mergeHeaders: true,
+                };
+                const exportConfig: IExportConfig = {
+                    format: XLSX,
+                    mergeHeaders: true,
+                    showFilters: oneAttributeOneMeasureOneFilterDataSource.getAfm().filters,
+                    title: "Untitled",
+                };
+
+                await exportResult(extendedExportConfig);
+                expect(sdk.report.exportResult).toBeCalledWith(PROJECT_ID, executionResult, exportConfig);
+
                 done();
             };
             createComponent({
                 onExportReady,
-                dataSource: oneMeasureOneDimensionDataSource
+                dataSource: oneAttributeOneMeasureOneFilterDataSource,
             });
         });
 
-        it('should return the file name passed', (done) => {
+        it("should return the default file name", done => {
             const onExportReady = async (exportResult: IExportFunction) => {
-                await exportResult({ format: 'xlsx' });
-                expect(sdk.report.exportResult).toBeCalledWith(
-                    PROJECT_ID,
-                    'foo',
-                    { format: 'xlsx', title: 'CustomTitle' }
-                );
+                await exportResult({ format: XLSX });
+                expect(sdk.report.exportResult).toBeCalledWith(PROJECT_ID, "foo", {
+                    format: XLSX,
+                    title: "Untitled",
+                });
                 done();
             };
             createComponent({
-                exportTitle: 'CustomTitle',
                 onExportReady,
-                dataSource: oneMeasureOneDimensionDataSource
+                dataSource: oneMeasureOneDimensionDataSource,
             });
         });
 
-        it('should return the validated file name', (done) => {
+        it("should return the file name passed", done => {
             const onExportReady = async (exportResult: IExportFunction) => {
-                await exportResult({ format: 'xlsx' });
-                expect(sdk.report.exportResult).toBeCalledWith(
-                    PROJECT_ID,
-                    'foo',
-                    { format: 'xlsx', title: 'CustomTitle' }
-                );
+                await exportResult({ format: XLSX });
+                expect(sdk.report.exportResult).toBeCalledWith(PROJECT_ID, "foo", {
+                    format: XLSX,
+                    title: "CustomTitle",
+                });
                 done();
             };
             createComponent({
-                exportTitle: 'Custom/\?*:|"<>Title',
+                exportTitle: "CustomTitle",
                 onExportReady,
-                dataSource: oneMeasureOneDimensionDataSource
+                dataSource: oneMeasureOneDimensionDataSource,
+            });
+        });
+
+        it("should return the validated file name", done => {
+            const onExportReady = async (exportResult: IExportFunction) => {
+                await exportResult({ format: XLSX });
+                expect(sdk.report.exportResult).toBeCalledWith(PROJECT_ID, "foo", {
+                    format: XLSX,
+                    title: "CustomTitle",
+                });
+                done();
+            };
+            createComponent({
+                exportTitle: 'Custom/?*:|"<>Title',
+                onExportReady,
+                dataSource: oneMeasureOneDimensionDataSource,
             });
         });
     });

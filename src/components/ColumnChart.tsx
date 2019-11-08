@@ -1,15 +1,19 @@
-// (C) 2007-2018 GoodData Corporation
-import * as React from 'react';
-import { omit } from 'lodash';
-import { Subtract } from 'utility-types';
-import { VisualizationInput, VisualizationObject } from '@gooddata/typings';
+// (C) 2007-2019 GoodData Corporation
+import * as React from "react";
+import omit = require("lodash/omit");
+import { VisualizationInput, VisualizationObject } from "@gooddata/typings";
 
-import { ColumnChart as AfmColumnChart } from './afm/ColumnChart';
-import { ICommonChartProps } from './core/base/BaseChart';
-import { convertBucketsToAFM } from '../helpers/conversion';
-import { getStackingResultSpec } from '../helpers/resultSpec';
-import { MEASURES, ATTRIBUTE, STACK } from '../constants/bucketNames';
-import { getViewByTwoAttributes } from '../helpers/optionalStacking/common';
+import { Subtract } from "../typings/subtract";
+import { ColumnChart as AfmColumnChart } from "./afm/ColumnChart";
+import { ICommonChartProps } from "./core/base/BaseChart";
+import { convertBucketsToAFM } from "../helpers/conversion";
+import { getStackingResultSpec } from "../helpers/resultSpec";
+import { MEASURES, ATTRIBUTE, STACK } from "../constants/bucketNames";
+import {
+    getViewByTwoAttributes,
+    sanitizeConfig,
+    sanitizeComputeRatioOnMeasures,
+} from "../helpers/optionalStacking/common";
 
 export interface IColumnChartBucketProps {
     measures: VisualizationInput.AttributeOrMeasure[];
@@ -30,27 +34,35 @@ type IColumnChartNonBucketProps = Subtract<IColumnChartProps, IColumnChartBucket
  * is a component with bucket props measures, viewBy, stackBy, filters
  */
 export function ColumnChart(props: IColumnChartProps): JSX.Element {
+    const measures = sanitizeComputeRatioOnMeasures(props.measures);
+    const viewBy = getViewByTwoAttributes(props.viewBy); // could be one or two attributes
+    const stackBy = props.stackBy ? [props.stackBy] : [];
+
     const buckets: VisualizationObject.IBucket[] = [
         {
             localIdentifier: MEASURES,
-            items: props.measures || []
+            items: measures,
         },
         {
             localIdentifier: ATTRIBUTE,
-            items: getViewByTwoAttributes(props.viewBy) // could be one or two attributes
+            items: viewBy,
         },
         {
             localIdentifier: STACK,
-            items: props.stackBy ? [props.stackBy] : []
-        }
+            items: stackBy,
+        },
     ];
 
-    const newProps
-        = omit<IColumnChartProps, IColumnChartNonBucketProps>(props, ['measures', 'viewBy', 'stackBy', 'filters']);
+    const newProps: IColumnChartNonBucketProps = omit<IColumnChartProps, keyof IColumnChartBucketProps>(
+        props,
+        ["measures", "viewBy", "stackBy", "filters", "sortBy"],
+    );
+    const sanitizedConfig = sanitizeConfig(measures, newProps.config);
 
     return (
         <AfmColumnChart
             {...newProps}
+            config={sanitizedConfig}
             projectId={props.projectId}
             afm={convertBucketsToAFM(buckets, props.filters)}
             resultSpec={getStackingResultSpec(buckets, props.sortBy)}

@@ -1,12 +1,11 @@
-// (C) 2007-2018 GoodData Corporation
+// (C) 2007-2019 GoodData Corporation
 /* eslint-disable react/jsx-closing-tag-location */
-import React from 'react';
-import assign from 'lodash/assign';
-import get from 'lodash/get';
-import ExportDialog from '@gooddata/goodstrap/lib/Dialog/ExportDialog';
-import PropTypes from 'prop-types';
+import React from "react";
+import get from "lodash/get";
+import ExportDialog from "@gooddata/goodstrap/lib/Dialog/ExportDialog";
+import PropTypes from "prop-types";
 
-const DOWNLOADER_ID = 'downloader';
+const DOWNLOADER_ID = "downloader";
 
 export class ExampleWithExport extends React.Component {
     constructor(props) {
@@ -14,25 +13,17 @@ export class ExampleWithExport extends React.Component {
 
         this.state = {
             showExportDialog: false,
-            errorMessage: null
+            errorMessage: null,
         };
 
-        this.onExportReady = this.onExportReady.bind(this);
-        this.exportToCSV = this.exportToCSV.bind(this);
-        this.exportToXLSX = this.exportToXLSX.bind(this);
-        this.exportWithCustomName = this.exportWithCustomName.bind(this);
-        this.exportWithDialog = this.exportWithDialog.bind(this);
-        this.exportWithMergeHeaders = this.exportWithMergeHeaders.bind(this);
         this.doExport = this.doExport.bind(this);
-        this.getExportDialog = this.getExportDialog.bind(this);
-        this.exportDialogCancel = this.exportDialogCancel.bind(this);
     }
 
-    onExportReady(exportResult) {
+    onExportReady = exportResult => {
         this.exportResult = exportResult;
-    }
+    };
 
-    getExportDialog() {
+    getExportDialog = () => {
         return (
             <ExportDialog
                 headline="Export to XLSX"
@@ -40,54 +31,57 @@ export class ExampleWithExport extends React.Component {
                 submitButtonText="Export"
                 isPositive
                 seleniumClass="s-dialog"
-
                 mergeHeaders
                 mergeHeadersDisabled={false}
                 mergeHeadersText="Keep attribute cells merged"
                 mergeHeadersTitle="CELLS"
-
                 onCancel={this.exportDialogCancel}
-                onSubmit={this.exportWithMergeHeaders}
+                onSubmit={this.exportDialogSubmit}
             />
         );
-    }
+    };
 
-    downloadFile(uri) {
+    downloadFile = uri => {
         let anchor = document.getElementById(DOWNLOADER_ID);
         if (!anchor) {
-            anchor = document.createElement('a');
+            anchor = document.createElement("a");
             anchor.id = DOWNLOADER_ID;
             document.body.appendChild(anchor);
         }
         anchor.href = uri;
         anchor.download = uri;
         anchor.click();
-    }
+    };
 
-    exportDialogCancel() {
+    exportDialogCancel = () => {
         this.setState({ showExportDialog: false });
-    }
+    };
 
-    exportToCSV() {
+    exportToCSV = () => {
         this.doExport({});
-    }
+    };
 
-    exportToXLSX() {
-        this.doExport({ format: 'xlsx' });
-    }
+    exportToXLSX = () => {
+        this.doExport({ format: "xlsx" });
+    };
 
-    exportWithCustomName() {
-        this.doExport({ title: 'CustomName' });
-    }
+    exportWithCustomName = () => {
+        this.doExport({ title: "CustomName" });
+    };
 
-    exportWithDialog() {
+    exportWithDialog = () => {
         this.setState({ showExportDialog: true });
-    }
+    };
 
-    exportWithMergeHeaders(exportConfig) {
+    exportDialogSubmit = data => {
+        const { mergeHeaders, includeFilterContext } = data;
+
         this.setState({ showExportDialog: false });
-        this.doExport(assign({ format: 'xlsx', title: 'CustomName' }, exportConfig));
-    }
+
+        const exportConfig = { format: "xlsx", title: "CustomName", includeFilterContext, mergeHeaders };
+
+        this.doExport(exportConfig);
+    };
 
     async doExport(exportConfig) {
         try {
@@ -97,7 +91,7 @@ export class ExampleWithExport extends React.Component {
         } catch (error) {
             let errorMessage = error.message;
             if (error.responseBody) {
-                errorMessage = get(JSON.parse(error.responseBody), 'error.message');
+                errorMessage = get(JSON.parse(error.responseBody), "error.message");
             }
             this.setState({ errorMessage });
         }
@@ -108,11 +102,7 @@ export class ExampleWithExport extends React.Component {
 
         let errorComponent;
         if (errorMessage) {
-            errorComponent = (
-                <div style={{ color: 'red', marginTop: 5 }}>
-                    {errorMessage}
-                </div>
-            );
+            errorComponent = <div style={{ color: "red", marginTop: 5 }}>{errorMessage}</div>;
         }
 
         let exportDialog;
@@ -124,12 +114,16 @@ export class ExampleWithExport extends React.Component {
             <div style={{ height: 367 }}>
                 {this.props.children(this.onExportReady)}
                 <div style={{ marginTop: 15 }}>
-                    <button className="button button-secondary" onClick={this.exportToCSV}>Export CSV</button>
-                    <button className="button button-secondary" onClick={this.exportToXLSX}>Export XLSX</button>
-                    <button className="button button-secondary" onClick={this.exportWithCustomName}>
+                    <button className="gd-button gd-button-secondary" onClick={this.exportToCSV}>
+                        Export CSV
+                    </button>
+                    <button className="gd-button gd-button-secondary" onClick={this.exportToXLSX}>
+                        Export XLSX
+                    </button>
+                    <button className="gd-button gd-button-secondary" onClick={this.exportWithCustomName}>
                         Export with custom name CustomName
                     </button>
-                    <button className="button button-secondary" onClick={this.exportWithDialog}>
+                    <button className="gd-button gd-button-secondary" onClick={this.exportWithDialog}>
                         Export using Export Dialog
                     </button>
                 </div>
@@ -141,7 +135,7 @@ export class ExampleWithExport extends React.Component {
 }
 
 ExampleWithExport.propTypes = {
-    children: PropTypes.func.isRequired
+    children: PropTypes.func.isRequired,
 };
 
 export default ExampleWithExport;

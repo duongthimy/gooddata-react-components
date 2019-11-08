@@ -1,20 +1,18 @@
 // (C) 2007-2018 GoodData Corporation
-import isEqual = require('lodash/isEqual');
-import noop = require('lodash/noop');
-import * as React from 'react';
-import { initChartPlugins } from './highcharts/chartPlugins';
-import { IChartConfig } from '../../../interfaces/Config';
+import isEqual = require("lodash/isEqual");
+import noop = require("lodash/noop");
+import * as React from "react";
+import { initChartPlugins } from "./highcharts/chartPlugins";
+import { IChartConfig } from "../../../interfaces/Config";
+import Highcharts from "./highcharts/highchartsEntryPoint";
 
-// Have only one entrypoint to highcharts and drill module
-// tslint:disable-next-line
-export const HighchartsMore = require('highcharts/highcharts-more');
-export const Highcharts = require('highcharts/highcharts'); // tslint:disable-line
-const drillmodule = require('highcharts/modules/drilldown'); // tslint:disable-line
-const treemapModule = require('highcharts/modules/treemap'); // tslint:disable-line
-const funnelModule = require('highcharts/modules/funnel'); // tslint:disable-line
-const heatmap = require('highcharts/modules/heatmap'); // tslint:disable-line
-const patternFill = require('highcharts-pattern-fill'); // tslint:disable-line
-const groupedCategories = require('highcharts-grouped-categories'); // tslint:disable-line
+const HighchartsMore = require("highcharts/highcharts-more"); // tslint:disable-line
+const drillmodule = require("highcharts/modules/drilldown"); // tslint:disable-line
+const treemapModule = require("highcharts/modules/treemap"); // tslint:disable-line
+const funnelModule = require("highcharts/modules/funnel"); // tslint:disable-line
+const heatmap = require("highcharts/modules/heatmap"); // tslint:disable-line
+const patternFill = require("highcharts/modules/pattern-fill"); // tslint:disable-line
+const groupedCategories = require("highcharts-grouped-categories"); // tslint:disable-line
 
 drillmodule(Highcharts);
 treemapModule(Highcharts);
@@ -34,10 +32,10 @@ export interface IChartProps {
 export default class Chart extends React.Component<IChartProps> {
     public static defaultProps: Partial<IChartProps> = {
         callback: noop,
-        domProps: {}
+        domProps: {},
     };
 
-    private chart: Highcharts.ChartObject;
+    private chart: Highcharts.Chart;
     private chartRef: HTMLElement;
 
     public constructor(props: IChartProps) {
@@ -69,9 +67,9 @@ export default class Chart extends React.Component<IChartProps> {
         this.chartRef = ref;
     }
 
-    public getChart(): Highcharts.ChartObject {
+    public getChart(): Highcharts.Chart {
         if (!this.chart) {
-            throw new Error('getChart() should not be called before the component is mounted');
+            throw new Error("getChart() should not be called before the component is mounted");
         }
 
         return this.chart;
@@ -84,19 +82,14 @@ export default class Chart extends React.Component<IChartProps> {
                 ...config,
                 chart: {
                     ...chartConfig,
-                    renderTo: this.chartRef
-                }
+                    renderTo: this.chartRef,
+                },
             },
-            this.props.callback
+            this.props.callback,
         );
     }
 
     public render() {
-        return (
-            <div
-                {...this.props.domProps}
-                ref={this.setChartRef}
-            />
-        );
+        return <div {...this.props.domProps} ref={this.setChartRef} />;
     }
 }

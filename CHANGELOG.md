@@ -2,7 +2,7 @@
 
 ## Supported REST API versions
 
-This table shows which version of the GoodData.UI introduced support for a particular API version.
+This table shows which version of GoodData.UI introduced support for a particular API version.
 
 The REST API versions in the table are just for your information as the values are set internally and cannot be overridden.
 
@@ -14,6 +14,117 @@ The REST API versions in the table are just for your information as the values a
 ## Unreleased/planned
 
 - We ask developers to consider using the Headline component instead of the KPI component. The KPI component may be eventually marked as deprecated in one of the next major versions.
+
+## 7.2.0
+
+### Added
+
+- Support for measure value filters
+- DateFilter component (beta version)
+
+### Fixed
+
+- Sticky row update in pivot table
+
+## 7.1.2
+
+October 17, 2019
+
+### Fixed
+
+- Use latest @gooddata/numberjs dependent package
+
+## 7.1.1
+
+October 14, 2019
+
+### Fixed
+
+- The Visualization component now propagates an externally provided SDK instance to the all internal charts
+
+## 7.1.0
+
+### Added
+
+- Adding applied filters to an exported XLSX file by using the `includeFilterContext` property
+
+### Changed
+
+- Updated Highcharts to version `7.1.1`
+- Updated Ag-grid to community version `20.0.0`
+- Added carets `^` to versions of:
+    - React `^16.5.2`
+    - Lodash `^4.17.11`
+    - And other smaller third-party libraries
+
+- The `IExportConfig` type is renamed to `IExtendedExportConfig` and moved to react-components
+```
+// old way
+
+import { IExportConfig } from '@gooddata/gooddata-js';
+
+const exportConfig: IExportConfig = {
+    format: XLSX,
+    mergeHeaders: true,
+    title: 'Custom Title'
+};
+
+// new way
+
+import { VisEvents } from '@gooddata/react-components';
+
+const exportConfig: VisEvents.IExtendedExportConfig = {
+    format: XLSX,
+    includeFilterContext: true,
+    mergeHeaders: true,
+    title: 'Custom Title'
+};
+```
+
+### Fixed
+
+- The Visualization component now propagates an externally provided SDK instance to the PivotTable component
+
+## 7.0.1
+
+June 28, 2019
+
+### Fixed
+
+- Drill event intersection element id. Now item localIdentifier has correctly higher priority over measure/attribute id
+
+## 7.0.0
+
+[Migration guide](https://sdk.gooddata.com/gooddata-ui/docs/migration_guide_7.html) from version 6.3.2
+
+### Added
+
+- Combo chart component ([doc](https://sdk.gooddata.com/gooddata-ui/docs/combo_chart_component.html))
+- Managing subtotals in pivot tables via a submenu
+- Formatting and validating the source code structure by [Prettier](https://prettier.io/)
+
+### Changed
+
+- The library now uses Typescript 3.3.4000.
+- The pivot table property `groupRows` is `true` by default, which means that grouping is now enabled by default.
+- Styling updates and various fixes have been applied to subtotals in the Pivot Table component.
+- The Legend icons of the line chart component and the area chart components are shown as circles instead of squares.
+
+## 6.3.3
+
+June 28, 2019
+
+### Fixed
+
+- Drill event intersection element id. Now item localIdentifier has correctly higher priority over measure/attribute id
+
+## 6.3.2
+
+ May 9, 2019
+
+ ### Changed
+
+ - Fixed drilling context types that were changed in version 6.3.0 resulting in major change. Types are now backward compatible with pre 6.3.0 versions.
 
 ## 6.3.1
 

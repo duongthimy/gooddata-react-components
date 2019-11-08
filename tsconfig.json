@@ -14,12 +14,15 @@
     "noUnusedParameters": true,
     "outDir": "dist",
     "sourceMap": true,
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es5"
   },
   "exclude": [
     "node_modules",
     "dist",
     "examples/node_modules",
-    "examples/dist"
+    "examples/dist",
+    "**/__mocks__/*"
   ]
 }

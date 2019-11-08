@@ -1,16 +1,20 @@
-// (C) 2007-2018 GoodData Corporation
-import { AFM } from '@gooddata/typings';
-import get = require('lodash/get');
+// (C) 2007-2019 GoodData Corporation
+import { AFM } from "@gooddata/typings";
+import get = require("lodash/get");
+import negate = require("lodash/negate");
+import { AfmUtils } from "@gooddata/gooddata-js/lib/DataLayer";
 
 export function isDerivedMeasure(measure: AFM.IMeasure): boolean {
-    return AFM.isPreviousPeriodMeasureDefinition(measure.definition)
-        || AFM.isPopMeasureDefinition(measure.definition);
+    return (
+        AFM.isPreviousPeriodMeasureDefinition(measure.definition) ||
+        AFM.isPopMeasureDefinition(measure.definition)
+    );
 }
 
 export function getMasterMeasureLocalIdentifier(measure: AFM.IMeasure): AFM.Identifier {
-    const measureDefinition = get<string>(measure, ['definition', 'popMeasure'])
-        || get<string>(measure, ['definition', 'previousPeriodMeasure']);
-    return get<string>(measureDefinition, ['measureIdentifier']);
+    const measureDefinition =
+        get(measure, ["definition", "popMeasure"]) || get(measure, ["definition", "previousPeriodMeasure"]);
+    return get(measureDefinition, ["measureIdentifier"]);
 }
 
 export function findMeasureByLocalIdentifier(afm: AFM.IAfm, localIdentifier: AFM.Identifier): AFM.IMeasure {
@@ -28,9 +32,28 @@ export function getMasterMeasureObjQualifier(afm: AFM.IAfm, localIdentifier: AFM
             return null;
         }
         return {
-            uri: get<string>(measure, ['definition', 'measure', 'item', 'uri']),
-            identifier: get<string>(measure, ['definition', 'measure', 'item', 'identifier'])
+            uri: get(measure, ["definition", "measure", "item", "uri"]),
+            identifier: get(measure, ["definition", "measure", "item", "identifier"]),
         };
     }
     return null;
 }
+
+const getDateFilter = (filters: AFM.ExtendedFilter[]): AFM.DateFilterItem => {
+    return filters.find(AfmUtils.isDateFilter);
+};
+
+const getAttributeFilters = (filters: AFM.ExtendedFilter[] = []): AFM.AttributeFilterItem[] => {
+    return filters.filter(AfmUtils.isAttributeFilter).filter(negate(AfmUtils.isAttributeFilterSelectAll));
+};
+
+const getMeasureValueFilters = (filters: AFM.ExtendedFilter[] = []): AFM.IMeasureValueFilter[] => {
+    return filters.filter(AFM.isMeasureValueFilter);
+};
+
+export const mergeFiltersToAfm = (afm: AFM.IAfm, additionalFilters: AFM.ExtendedFilter[]): AFM.IAfm => {
+    const attributeFilters = getAttributeFilters(additionalFilters);
+    const dateFilter = getDateFilter(additionalFilters);
+    const measureValueFilters = getMeasureValueFilters(additionalFilters);
+    return AfmUtils.appendFilters(afm, attributeFilters, dateFilter, measureValueFilters);
+};

@@ -1,9 +1,35 @@
+// (C) 2007-2019 GoodData Corporation
+
 const heatmapAfmExecutions = [{
         execution: require('./stories/test_data/heat_map_with_58_rows_mock_request.json'),
         executionResult: require('./stories/test_data/heat_map_with_58_rows_mock_result.json')
     }, {
         execution: require('./stories/test_data/heat_map_with_60_rows_mock_request.json'),
         executionResult: require('./stories/test_data/heat_map_with_60_rows_mock_result.json')
+    }, {
+        execution: require('./stories/test_data/heat_map_with_empty_cells_request.json'),
+        executionResult: require('./stories/test_data/heat_map_with_empty_cells_result.json')
+    }];
+
+const pivotTableAfmExecutions = [
+    {
+        execution: require("./stories/test_data/pivot_table_with_subtotals_request.json"),
+        executionResponse: require("./stories/test_data/pivot_table_with_subtotals_response.json"),
+        executionResult: require("./stories/test_data/pivot_table_with_subtotals_result.json"),
+    }];
+
+const pivotTableSubtotalsAfmExecutions = [
+    {
+        execution: require("./stories/test_data/pivot_table_with_subtotals_2_measures_request.json"),
+        executionResponse: require("./stories/test_data/pivot_table_with_subtotals_2_measures_response.json"),
+        executionResult: require("./stories/test_data/pivot_table_with_subtotals_2_measures_result.json"),
+    }];
+
+const pivotTableGrandtotalSubtotalAfmExecutions = [
+    {
+        execution: require("./stories/test_data/pivot_table_with_grandtotal_subtotal_2_measures_request.json"),
+        executionResponse: require("./stories/test_data/pivot_table_with_grandtotal_subtotal_2_measures_response.json"),
+        executionResult: require("./stories/test_data/pivot_table_with_grandtotal_subtotal_2_measures_result.json"),
     }];
 
 const getBaseProjectSchema = (title, identifier) => {
@@ -2184,7 +2210,10 @@ const getBaseProjectSchema = (title, identifier) => {
                     }
                 }
             },
-            ...heatmapAfmExecutions
+            ...heatmapAfmExecutions,
+            ...pivotTableAfmExecutions,
+            ...pivotTableSubtotalsAfmExecutions,
+            ...pivotTableGrandtotalSubtotalAfmExecutions,
         ],
         visualizationClasses: [{
             title: 'Table',
@@ -2198,6 +2227,9 @@ const getBaseProjectSchema = (title, identifier) => {
         }, {
             title: 'Line',
             url: 'local:line'
+        }, {
+            title: 'Combo',
+            url: 'local:combo2'
         }, {
             title: 'Pie',
             url: 'local:pie'
@@ -2422,6 +2454,42 @@ const getBaseProjectSchema = (title, identifier) => {
                 properties: "{\"controls\":{\"grid\":{\"enabled\":false}}}"
             },
             {
+                title: 'Chart with X and Y axis name aligned to left and top respectively',
+                identifier: 'aligned-axis-name',
+                type: 'local:bar',
+                filters: [],
+                buckets: [{
+                    localIdentifier: 'measures',
+                    items: [{
+                        localIdentifier: 'm1',
+                        filters: [],
+                        identifier: '1',
+                        alias: 'Amount'
+                    }]
+                }, {
+                    localIdentifier: 'view',
+                    items: [{
+                        localIdentifier: 'a1',
+                        displayForm: 'attr.closed.year.df',
+                        alias: 'Date'
+                    }]
+                }],
+                properties: JSON.stringify({
+                    controls: {
+                        xaxis: {
+                            name: {
+                                position: "left"
+                            }
+                        },
+                        yaxis: {
+                            name: {
+                                position: "top"
+                            }
+                        }
+                    }
+                })
+            },
+            {
                 identifier: '1010',
                 title: 'Table',
                 type: 'local:table',
@@ -2432,6 +2500,62 @@ const getBaseProjectSchema = (title, identifier) => {
                         identifier: '1'
                     }, {
                         localIdentifier: '2',
+                        identifier: '2'
+                    }]
+                }, {
+                    localIdentifier: 'attribute',
+                    items: [{
+                        localIdentifier: 'a1',
+                        displayForm: '4.df'
+                    }, {
+                        localIdentifier: 'a2',
+                        displayForm: '5.df'
+                    }]
+                }]
+            },
+            {
+                title: 'Combo chart',
+                identifier: '1011',
+                type: 'local:combo2',
+                buckets: [{
+                    localIdentifier: 'measures',
+                    items: [{
+                        localIdentifier: 'm1',
+                        identifier: '1'
+                    }]
+                }, {
+                    localIdentifier: 'secondary_measures',
+                    items: [{
+                        localIdentifier: 'm2',
+                        identifier: '2'
+                    }]
+                }, {
+                    localIdentifier: 'view',
+                    items: [{
+                        localIdentifier: 'a1',
+                        displayForm: 'attr.closed.year.df',
+                        title: 'Date'
+                    }]
+                }],
+                properties: "{\"controls\":{\"secondary_yaxis\":{\"measures\":[\"2\"]},\"primaryChartType\":\"column\",\"secondaryChartType\":\"line\"}}"
+            },
+            {
+                title: 'Table with measure value filters',
+                identifier: 'measure-value-filters',
+                type: 'local:table',
+                filters: [{
+                    type: "measureComparison",
+                    identifier: "m1",
+                    operator: "GREATER_THAN",
+                    value: 500
+                }],
+                buckets: [{
+                    localIdentifier: 'measures',
+                    items: [{
+                        localIdentifier: 'm1',
+                        identifier: '1'
+                    }, {
+                        localIdentifier: 'm2',
                         identifier: '2'
                     }]
                 }, {
@@ -2478,12 +2602,5 @@ module.exports = [
                 }
             ]
         },
-    },
-    {
-        ...getBaseProjectSchema('Storybook project pivot table grouping', 'pivot_grouping_storybook'),
-        featureFlags: {
-            enablePivot: true,
-            enablePivotGrouping: true
-        }
     },
 ];

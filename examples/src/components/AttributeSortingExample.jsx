@@ -1,25 +1,23 @@
 // (C) 2007-2019 GoodData Corporation
 
-import React, { Component } from 'react';
-import { ColumnChart, Model } from '@gooddata/react-components';
+import React, { Component } from "react";
+import { ColumnChart, Model } from "@gooddata/react-components";
 
-import '@gooddata/react-components/styles/css/main.css';
+import "@gooddata/react-components/styles/css/main.css";
 
-import { totalSalesIdentifier, locationCityDisplayFormIdentifier, projectId } from '../utils/fixtures';
+import { totalSalesIdentifier, locationCityDisplayFormIdentifier, projectId } from "../utils/fixtures";
+
+const measures = [Model.measure(totalSalesIdentifier)];
+const attribute = Model.attribute(locationCityDisplayFormIdentifier).localIdentifier(
+    locationCityDisplayFormIdentifier,
+);
+const sortBy = [Model.attributeSortItem(locationCityDisplayFormIdentifier, "desc")];
 
 export class AttributeSortingExample extends Component {
     render() {
         return (
             <div style={{ height: 300 }} className="s-attribute-sorting">
-                <ColumnChart
-                    projectId={projectId}
-                    measures={[Model.measure(totalSalesIdentifier)]}
-                    viewBy={
-                        Model.attribute(locationCityDisplayFormIdentifier)
-                            .localIdentifier(locationCityDisplayFormIdentifier)
-                    }
-                    sortBy={[Model.attributeSortItem(locationCityDisplayFormIdentifier, 'desc')]}
-                />
+                <ColumnChart projectId={projectId} measures={measures} viewBy={attribute} sortBy={sortBy} />
             </div>
         );
     }

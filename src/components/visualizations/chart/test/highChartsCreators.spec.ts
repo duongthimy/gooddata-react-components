@@ -1,36 +1,38 @@
-// (C) 2007-2018 GoodData Corporation
-import { getHighchartsOptions } from '../highChartsCreators';
-import { VisualizationTypes } from '../../../../constants/visualizationTypes';
-import handleChartLoad from '../events/load';
-import { supportedDualAxesChartTypes } from '../chartOptionsBuilder';
+// (C) 2007-2019 GoodData Corporation
+import noop = require("lodash/noop");
+import { getHighchartsOptions } from "../highChartsCreators";
+import { VisualizationTypes } from "../../../../constants/visualizationTypes";
+import { supportedDualAxesChartTypes } from "../chartOptionsBuilder";
+import { handleChartLoad } from "../highcharts/commonConfiguration";
+import { IDrillConfig } from "../../../../interfaces/DrillEvents";
 
 const chartOptions = {
     data: {
         series: [
             {
                 isDrillable: false,
-                name: 'aa',
+                name: "aa",
                 data: [
                     {
-                        name: 'aa.0'
+                        name: "aa.0",
                     },
-                    null
+                    null,
                 ],
-                color: 'rgb(20,178,226)'
+                color: "rgb(20,178,226)",
             },
             {
                 isDrillable: true,
-                name: 'bb',
+                name: "bb",
                 data: [
                     {
-                        name: 'bb.0'
+                        name: "bb.0",
                     },
-                    null
+                    null,
                 ],
-                color: 'rgb(0,193,141)'
-            }
-        ]
-    }
+                color: "rgb(0,193,141)",
+            },
+        ],
+    },
 };
 
 const pieChartOrTreemapOptions = {
@@ -38,20 +40,20 @@ const pieChartOrTreemapOptions = {
     data: {
         series: [
             {
-                name: 'aa',
+                name: "aa",
                 data: [
                     {
-                        name: 'aa.0',
-                        drilldown: false
+                        name: "aa.0",
+                        drilldown: false,
                     },
                     {
-                        name: 'bb.0',
-                        drilldown: true
-                    }
-                ]
-            }
-        ]
-    }
+                        name: "bb.0",
+                        drilldown: true,
+                    },
+                ],
+            },
+        ],
+    },
 };
 
 const comboChartOptions = {
@@ -60,156 +62,149 @@ const comboChartOptions = {
         series: [
             {
                 isDrillable: false,
-                name: 'aa',
+                name: "aa",
                 data: [
                     {
-                        name: 'aa.0'
+                        name: "aa.0",
                     },
-                    null
+                    null,
                 ],
-                color: 'rgb(20, 178, 226)'
+                color: "rgb(20, 178, 226)",
             },
             {
                 isDrillable: true,
-                type: 'line',
-                name: 'bb',
+                type: "line",
+                name: "bb",
                 data: [
                     {
-                        name: 'bb.0'
+                        name: "bb.0",
                     },
-                    null
+                    null,
                 ],
-                color: 'rgb(0,193,141)'
-            }
-        ]
-    }
+                color: "rgb(0,193,141)",
+            },
+        ],
+    },
 };
 
-describe('highChartCreators', () => {
-    describe('Line chart configuration', () => {
-        const config = getHighchartsOptions({ ...chartOptions, type: VisualizationTypes.LINE }, {});
+const drillConfig: IDrillConfig = {
+    afm: null,
+    onFiredDrillEvent: noop,
+    onDrill: noop,
+};
 
-        it('contains styles for drillable', () => {
-            expect(config).toHaveProperty('series.0.states.hover.halo.size', 0);
+describe("highChartCreators", () => {
+    describe("Line chart configuration", () => {
+        const config = getHighchartsOptions({ ...chartOptions, type: VisualizationTypes.LINE }, drillConfig);
 
-            expect(config).not.toHaveProperty('series.0.marker.states.hover.fillColor');
-            expect(config).not.toHaveProperty('series.0.cursor');
+        it("contains styles for drillable", () => {
+            expect(config).toHaveProperty("series.0.states.hover.halo.size", 0);
+
+            expect(config).not.toHaveProperty("series.0.marker.states.hover.fillColor");
+            expect(config).not.toHaveProperty("series.0.cursor");
         });
 
-        it('contains styles for non-drillable', () => {
-            expect(config).not.toHaveProperty('series.1.states.hover.halo.size');
+        it("contains styles for non-drillable", () => {
+            expect(config).not.toHaveProperty("series.1.states.hover.halo.size");
 
-            expect(config).toHaveProperty('series.1.marker.states.hover.fillColor', 'rgb(26,199,152)');
-        });
-    });
-
-    describe('Area chart configuration', () => {
-        const config = getHighchartsOptions({ ...chartOptions, type: VisualizationTypes.AREA }, {});
-
-        it('contains styles for drillable', () => {
-            expect(config).toHaveProperty('series.0.states.hover.halo.size', 0);
-
-            expect(config).not.toHaveProperty('series.0.marker.states.hover.fillColor');
-            expect(config).not.toHaveProperty('series.0.cursor');
-        });
-
-        it('contains styles for non-drillable', () => {
-            expect(config).not.toHaveProperty('series.1.states.hover.halo.size');
-
-            expect(config).toHaveProperty('series.1.marker.states.hover.fillColor', 'rgb(26,199,152)');
+            expect(config).toHaveProperty("series.1.marker.states.hover.fillColor", "rgb(26,199,152)");
         });
     });
 
-    describe('Column chart configuration', () => {
-        const config = getHighchartsOptions({ ...chartOptions, type: VisualizationTypes.COLUMN }, {});
+    describe("Area chart configuration", () => {
+        const config = getHighchartsOptions({ ...chartOptions, type: VisualizationTypes.AREA }, drillConfig);
 
-        it('contains styles for drillable and non-drillable', () => {
-            expect(config).toHaveProperty('series.0.states.hover.brightness');
-            expect(config).toHaveProperty('series.0.states.hover.enabled', false);
-            expect(config).toHaveProperty('series.1.states.hover.enabled', true);
+        it("contains styles for drillable", () => {
+            expect(config).toHaveProperty("series.0.states.hover.halo.size", 0);
+
+            expect(config).not.toHaveProperty("series.0.marker.states.hover.fillColor");
+            expect(config).not.toHaveProperty("series.0.cursor");
+        });
+
+        it("contains styles for non-drillable", () => {
+            expect(config).not.toHaveProperty("series.1.states.hover.halo.size");
+
+            expect(config).toHaveProperty("series.1.marker.states.hover.fillColor", "rgb(26,199,152)");
         });
     });
 
-    describe('Column chart stacked configuration', () => {
-        const config = getHighchartsOptions({ ...chartOptions, type: VisualizationTypes.COLUMN, stacking: true }, {});
+    describe("Column chart configuration", () => {
+        const config = getHighchartsOptions(
+            { ...chartOptions, type: VisualizationTypes.COLUMN },
+            drillConfig,
+        );
 
-        it('contains drilldown label styles', () => {
-            expect(config).toHaveProperty('drilldown.activeDataLabelStyle.color');
+        it("contains styles for drillable and non-drillable", () => {
+            expect(config).toHaveProperty("series.0.states.hover.brightness");
+            expect(config).toHaveProperty("series.0.states.hover.enabled", false);
+            expect(config).toHaveProperty("series.1.states.hover.enabled", true);
         });
     });
 
-    describe('Bar chart configuration', () => {
-        const config = getHighchartsOptions({ ...chartOptions, type: VisualizationTypes.BAR }, {});
+    describe("Column chart stacked configuration", () => {
+        const config = getHighchartsOptions(
+            { ...chartOptions, type: VisualizationTypes.COLUMN, stacking: "normal" },
+            drillConfig,
+        );
 
-        it('contains styles for drillable and non-drillable', () => {
-            expect(config).toHaveProperty('series.0.states.hover.brightness');
-            expect(config).toHaveProperty('series.0.states.hover.enabled', false);
-            expect(config).toHaveProperty('series.1.states.hover.enabled', true);
+        it("contains drilldown label styles", () => {
+            expect(config).toHaveProperty("drilldown.activeDataLabelStyle.color");
         });
     });
 
-    describe('Pie chart configuration', () => {
-        const config = getHighchartsOptions(pieChartOrTreemapOptions, {});
+    describe("Bar chart configuration", () => {
+        const config = getHighchartsOptions({ ...chartOptions, type: VisualizationTypes.BAR }, drillConfig);
 
-        it('contains styles for drillable and non-drillable', () => {
-            expect(config).toHaveProperty('series.0.data.0.states.hover.brightness');
-            expect(config).toHaveProperty('series.0.data.0.halo.size', 0);
-            expect(config).not.toHaveProperty('series.0.data.1.halo.size');
+        it("contains styles for drillable and non-drillable", () => {
+            expect(config).toHaveProperty("series.0.states.hover.brightness");
+            expect(config).toHaveProperty("series.0.states.hover.enabled", false);
+            expect(config).toHaveProperty("series.1.states.hover.enabled", true);
         });
     });
 
-    describe('Treemap configuration', () => {
-        const config = getHighchartsOptions(pieChartOrTreemapOptions, {});
+    describe("Pie chart configuration", () => {
+        const config = getHighchartsOptions(pieChartOrTreemapOptions, drillConfig);
 
-        it('contains styles for drillable and non-drillable', () => {
-            expect(config).toHaveProperty('series.0.data.0.states.hover.brightness');
-            expect(config).toHaveProperty('series.0.data.0.halo.size', 0);
-            expect(config).not.toHaveProperty('series.0.data.1.halo.size');
+        it("contains styles for drillable and non-drillable", () => {
+            expect(config).toHaveProperty("series.0.data.0.states.hover.brightness");
+            expect(config).toHaveProperty("series.0.data.0.halo.size", 0);
+            expect(config).not.toHaveProperty("series.0.data.1.halo.size");
         });
     });
 
-    describe('Combo chart configuration', () => {
-        const config = getHighchartsOptions(comboChartOptions, {});
+    describe("Treemap configuration", () => {
+        const config = getHighchartsOptions(pieChartOrTreemapOptions, drillConfig);
 
-        it('contains different hover styles for column and line series', () => {
-            expect(config).toHaveProperty('series.0.states.hover.brightness');
-            expect(config).toHaveProperty('series.0.states.hover.enabled', false);
+        it("contains styles for drillable and non-drillable", () => {
+            expect(config).toHaveProperty("series.0.data.0.states.hover.brightness");
+            expect(config).toHaveProperty("series.0.data.0.halo.size", 0);
+            expect(config).not.toHaveProperty("series.0.data.1.halo.size");
         });
     });
 
-    describe('Heatmap configuration', () => {
-        const config = getHighchartsOptions({
-            ...chartOptions,
-            type: VisualizationTypes.HEATMAP,
-            data: {
-                ...chartOptions.data,
-                categories: []
-            }
-        }, {});
+    describe("Combo chart configuration", () => {
+        const config = getHighchartsOptions(comboChartOptions, drillConfig);
 
-        it('have no white grid line between each cell', () => {
-            expect(config.series[0].borderWidth).toBe(0);
-        });
-
-        it('defined empty data pattern', () => {
-            expect(config.defs.patterns[0].id).toEqual('empty-data-pattern');
+        it("contains different hover styles for column and line series", () => {
+            expect(config).toHaveProperty("series.0.states.hover.brightness");
+            expect(config).toHaveProperty("series.0.states.hover.enabled", false);
         });
     });
 
-    describe('Load event configuration', () => {
-        const getConfig = (type: string) => getHighchartsOptions({ ...chartOptions, type }, {});
+    describe("Render event configuration", () => {
+        const getConfig = (type: string) => getHighchartsOptions({ ...chartOptions, type }, drillConfig);
 
-        it('should column/bar/line chart be registered load event', () => {
+        it("should dual axis charts be registered render event", () => {
             supportedDualAxesChartTypes.forEach((type: string) => {
                 const config = getConfig(type);
-                expect(config.chart.events.load).toBe(handleChartLoad);
+                expect(config.chart.events.render).toBe(handleChartLoad);
             });
         });
 
-        it('should other charts not be registered load event', () => {
-            // area chart is an example, as long as it's not column/bar/line chart
-            const config = getConfig(VisualizationTypes.AREA);
-            expect(config.chart.events.load).toBeFalsy();
+        it("should other charts not be registered render event", () => {
+            // Bubble chart is an example, as long as it's not dual axis charts
+            const config = getConfig(VisualizationTypes.BUBBLE);
+            expect(config.chart.events.render).toBeFalsy();
         });
     });
 });

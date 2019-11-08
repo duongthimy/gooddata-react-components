@@ -1,30 +1,35 @@
 // (C) 2007-2019 GoodData Corporation
-import * as cx from 'classnames';
-import noop = require('lodash/noop');
-import isString = require('lodash/isString');
-import set = require('lodash/set');
-import get = require('lodash/get');
-import merge = require('lodash/merge');
-import map = require('lodash/map');
-import partial = require('lodash/partial');
-import isEmpty = require('lodash/isEmpty');
-import compact = require('lodash/compact');
-import cloneDeep = require('lodash/cloneDeep');
-import every = require('lodash/every');
-import isNil = require('lodash/isNil');
-import pickBy = require('lodash/pickBy');
-import * as numberJS from '@gooddata/numberjs';
+import noop = require("lodash/noop");
+import isString = require("lodash/isString");
+import set = require("lodash/set");
+import get = require("lodash/get");
+import merge = require("lodash/merge");
+import map = require("lodash/map");
+import partial = require("lodash/partial");
+import isEmpty = require("lodash/isEmpty");
+import compact = require("lodash/compact");
+import cloneDeep = require("lodash/cloneDeep");
+import every = require("lodash/every");
+import isNil = require("lodash/isNil");
+import pickBy = require("lodash/pickBy");
+import * as numberJS from "@gooddata/numberjs";
+import * as cx from "classnames";
 
-import { styleVariables } from '../../styles/variables';
-import { IChartOptions, supportedDualAxesChartTypes } from '../chartOptionsBuilder';
-import { VisualizationTypes, ChartType } from '../../../../constants/visualizationTypes';
-import { IDataLabelsVisible, IChartConfig, IAxis } from '../../../../interfaces/Config';
-import { getShapeVisiblePart } from '../highcharts/dataLabelsHelpers';
-import { HOVER_BRIGHTNESS, MINIMUM_HC_SAFE_BRIGHTNESS } from './commonConfiguration';
+import { styleVariables } from "../../styles/variables";
+import { supportedDualAxesChartTypes, supportedTooltipFollowPointerChartTypes } from "../chartOptionsBuilder";
+import { VisualizationTypes, ChartType } from "../../../../constants/visualizationTypes";
 import {
-    AXIS_LINE_COLOR,
-    getLighterColor
-} from '../../utils/color';
+    IDataLabelsVisible,
+    IChartConfig,
+    IAxis,
+    IChartOptions,
+    ISeriesItem,
+    IPointData,
+} from "../../../../interfaces/Config";
+import { percentFormatter } from "../../../../helpers/utils";
+import { formatAsPercent, getLabelStyle, getLabelsVisibilityConfig, isInPercent } from "./dataLabelsHelpers";
+import { HOVER_BRIGHTNESS, MINIMUM_HC_SAFE_BRIGHTNESS } from "./commonConfiguration";
+import { AXIS_LINE_COLOR, getLighterColor } from "../../utils/color";
 import {
     isBarChart,
     isColumnChart,
@@ -34,64 +39,71 @@ import {
     isTreemap,
     isHeatmap,
     isScatterPlot,
-    isBubbleChart
-} from '../../utils/common';
-import { shouldFollowPointer } from '../../../visualizations/chart/highcharts/helpers';
+    isBubbleChart,
+    isComboChart,
+} from "../../utils/common";
+import { shouldFollowPointer } from "../../../visualizations/chart/highcharts/helpers";
 import {
     shouldStartOnTick,
     shouldEndOnTick,
     shouldXAxisStartOnTickOnBubbleScatter,
-    shouldYAxisStartOnTickOnBubbleScatter
-} from '../highcharts/helpers';
+    shouldYAxisStartOnTickOnBubbleScatter,
+} from "../highcharts/helpers";
 
-import getOptionalStackingConfiguration from './getOptionalStackingConfiguration';
+import getOptionalStackingConfiguration from "./getOptionalStackingConfiguration";
+import { IDrillConfig } from "../../../../interfaces/DrillEvents";
+import { getZeroAlignConfiguration } from "./getZeroAlignConfiguration";
+import { canComboChartBeStackedInPercent } from "../chartOptions/comboChartOptions";
+import { getAxisNameConfiguration } from "./getAxisNameConfiguration";
+import { getChartAlignmentConfiguration } from "./getChartAlignmentConfiguration";
 
-const {
-    stripColors,
-    numberFormat
-}: any = numberJS;
+const { stripColors, numberFormat }: any = numberJS;
 
 const EMPTY_DATA: any = { categories: [], series: [] };
 
-const ALIGN_LEFT = 'left';
-const ALIGN_RIGHT = 'right';
-const ALIGN_CENTER = 'center';
+const ALIGN_LEFT = "left";
+const ALIGN_RIGHT = "right";
+const ALIGN_CENTER = "center";
 
 const TOOLTIP_ARROW_OFFSET = 23;
-const TOOLTIP_FULLSCREEN_THRESHOLD = 480;
-const TOOLTIP_MAX_WIDTH = 366;
+const TOOLTIP_MAX_WIDTH = 320;
 const TOOLTIP_BAR_CHART_VERTICAL_OFFSET = 5;
 const TOOLTIP_VERTICAL_OFFSET = 14;
+const BAR_COLUMN_TOOLTIP_TOP_OFFSET = 8;
+const BAR_COLUMN_TOOLTIP_LEFT_OFFSET = 5;
+const HIGHCHARTS_TOOLTIP_TOP_LEFT_OFFSET = 16;
 
-const escapeAngleBrackets = (str: any) => str && str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// in viewport <= 480, tooltip width is equal to chart container width
+const TOOLTIP_FULLSCREEN_THRESHOLD = 480;
+
+const escapeAngleBrackets = (str: any) => str && str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 function getTitleConfiguration(chartOptions: IChartOptions) {
     const { yAxes = [], xAxes = [] } = chartOptions;
-    const yAxis = yAxes.map((axis: IAxis) => (axis ? {
-        title: {
-            text: escapeAngleBrackets(get(axis, 'label', ''))
-        }
-    } : {}));
+    const yAxis = yAxes.map((axis: IAxis) =>
+        axis
+            ? {
+                  title: {
+                      text: escapeAngleBrackets(get(axis, "label", "")),
+                  },
+              }
+            : {},
+    );
 
-    const xAxis = xAxes.map((axis: IAxis) => (axis ? {
-        title: {
-            text: escapeAngleBrackets(get(axis, 'label', ''))
-        }
-    } : {}));
+    const xAxis = xAxes.map((axis: IAxis) =>
+        axis
+            ? {
+                  title: {
+                      text: escapeAngleBrackets(get(axis, "label", "")),
+                  },
+              }
+            : {},
+    );
 
     return {
         yAxis,
-        xAxis
+        xAxis,
     };
-}
-
-export function formatAsPercent(unit: number = 100) {
-    const val = parseFloat((this.value * unit).toPrecision(14));
-    return `${val}%`;
-}
-
-export function isInPercent(format: string = '') {
-    return format.includes('%');
 }
 
 export function formatOverlappingForParentAttribute(category: any) {
@@ -100,46 +112,53 @@ export function formatOverlappingForParentAttribute(category: any) {
         return formatOverlapping.call(this);
     }
 
-    const chartHeight = get(this, 'axis.chart.chartHeight', 1);
-    const categoriesCount = get(this, 'axis.categoriesTree', []).length;
+    const chartHeight = get(this, "axis.chart.chartHeight", 1);
+    const categoriesCount = get(this, "axis.categoriesTree", []).length;
     const width = Math.floor(chartHeight / categoriesCount);
     const pixelOffset = 40; // parent attribute should have more space than its children
 
     const finalWidth = Math.max(0, width - pixelOffset);
 
-    return (
-        `<div style="width: ${finalWidth}px; overflow: hidden; text-overflow: ellipsis">${this.value}</div>`
-    );
+    return `<div style="width: ${finalWidth}px; overflow: hidden; text-overflow: ellipsis">${
+        this.value
+    }</div>`;
 }
 
 export function formatOverlapping() {
-    const chartHeight = get(this, 'chart.chartHeight', 1);
-    const categoriesCount = get(this, 'axis.categories', []).length;
+    const chartHeight = get(this, "chart.chartHeight", 1);
+    const categoriesCount = get(this, "axis.categories", []).length;
     const width = Math.floor(chartHeight / categoriesCount);
     const pixelOffset = 20;
 
     const finalWidth = Math.max(0, width - pixelOffset);
 
     return (
-        `<div align="center" style="width: ${finalWidth}px; overflow: hidden; text-overflow: ellipsis">`
-        + this.value + '</div>'
+        `<div align="center" style="width: ${finalWidth}px; overflow: hidden; text-overflow: ellipsis">` +
+        this.value +
+        "</div>"
     );
 }
 
 function hideOverlappedLabels(chartOptions: IChartOptions) {
-    const rotation = Number(get(chartOptions, 'xAxisProps.rotation', '0'));
+    const rotation = Number(get(chartOptions, "xAxisProps.rotation", "0"));
 
     // Set only for bar chart and labels are rotated by 90
     if (isBarChart(chartOptions.type) && isRotationInRange(rotation, 75, 105)) {
         const { xAxes = [], isViewByTwoAttributes } = chartOptions;
 
         return {
-            xAxis: xAxes.map((axis: any) => (axis) ? {
-                labels: {
-                    useHTML: true,
-                    formatter: isViewByTwoAttributes ? formatOverlappingForParentAttribute : formatOverlapping
-                }
-            } : {})
+            xAxis: xAxes.map((axis: any) =>
+                axis
+                    ? {
+                          labels: {
+                              useHTML: true,
+                              formatter: isViewByTwoAttributes
+                                  ? formatOverlappingForParentAttribute
+                                  : formatOverlapping,
+                          },
+                      }
+                    : {},
+            ),
         };
     }
 
@@ -148,22 +167,31 @@ function hideOverlappedLabels(chartOptions: IChartOptions) {
 
 function getShowInPercentConfiguration(chartOptions: IChartOptions) {
     const { yAxes = [], xAxes = [] } = chartOptions;
+    const percentageFormatter = partial(formatAsPercent, 100);
 
-    const xAxis = xAxes.map((axis: any) => (axis && isInPercent(axis.format) ? {
-        labels: {
-            formatter: formatAsPercent
-        }
-    } : {}));
+    const xAxis = xAxes.map((axis: any) =>
+        axis && isInPercent(axis.format)
+            ? {
+                  labels: {
+                      formatter: percentageFormatter,
+                  },
+              }
+            : {},
+    );
 
-    const yAxis = yAxes.map((axis: any) => (axis && isInPercent(axis.format) ? {
-        labels: {
-            formatter: formatAsPercent
-        }
-    } : {}));
+    const yAxis = yAxes.map((axis: any) =>
+        axis && isInPercent(axis.format)
+            ? {
+                  labels: {
+                      formatter: percentageFormatter,
+                  },
+              }
+            : {},
+    );
 
     return {
         xAxis,
-        yAxis
+        yAxis,
     };
 }
 
@@ -171,17 +199,11 @@ function getArrowAlignment(arrowPosition: any, chartWidth: any) {
     const minX = -TOOLTIP_ARROW_OFFSET;
     const maxX = chartWidth + TOOLTIP_ARROW_OFFSET;
 
-    if (
-        arrowPosition + (TOOLTIP_MAX_WIDTH / 2) > maxX &&
-        arrowPosition - (TOOLTIP_MAX_WIDTH / 2) > minX
-    ) {
+    if (arrowPosition + TOOLTIP_MAX_WIDTH / 2 > maxX && arrowPosition - TOOLTIP_MAX_WIDTH / 2 > minX) {
         return ALIGN_RIGHT;
     }
 
-    if (
-        arrowPosition - (TOOLTIP_MAX_WIDTH / 2) < minX &&
-        arrowPosition + (TOOLTIP_MAX_WIDTH / 2) < maxX
-    ) {
+    if (arrowPosition - TOOLTIP_MAX_WIDTH / 2 < minX && arrowPosition + TOOLTIP_MAX_WIDTH / 2 < maxX) {
         return ALIGN_LEFT;
     }
 
@@ -191,28 +213,28 @@ function getArrowAlignment(arrowPosition: any, chartWidth: any) {
 const getTooltipHorizontalStartingPosition = (arrowPosition: any, chartWidth: any, tooltipWidth: any) => {
     switch (getArrowAlignment(arrowPosition, chartWidth)) {
         case ALIGN_RIGHT:
-            return (arrowPosition - tooltipWidth) + TOOLTIP_ARROW_OFFSET;
+            return arrowPosition - tooltipWidth + TOOLTIP_ARROW_OFFSET;
         case ALIGN_LEFT:
             return arrowPosition - TOOLTIP_ARROW_OFFSET;
         default:
-            return arrowPosition - (tooltipWidth / 2);
+            return arrowPosition - tooltipWidth / 2;
     }
 };
 
 function getArrowHorizontalPosition(chartType: any, stacking: any, dataPointEnd: any, dataPointHeight: any) {
     if (isBarChart(chartType) && stacking) {
-        return dataPointEnd - (dataPointHeight / 2);
+        return dataPointEnd - dataPointHeight / 2;
     }
 
     return dataPointEnd;
 }
 
 function getDataPointEnd(chartType: any, isNegative: any, endPoint: any, height: any, stacking: any) {
-    return (isBarChart(chartType) && isNegative && stacking) ? endPoint + height : endPoint;
+    return isBarChart(chartType) && isNegative && stacking ? endPoint + height : endPoint;
 }
 
 function getDataPointStart(chartType: any, isNegative: any, endPoint: any, height: any, stacking: any) {
-    return (isColumnChart(chartType) && isNegative && stacking) ? endPoint - height : endPoint;
+    return isColumnChart(chartType) && isNegative && stacking ? endPoint - height : endPoint;
 }
 
 function getTooltipVerticalOffset(chartType: any, stacking: any, point: any) {
@@ -227,7 +249,13 @@ function getTooltipVerticalOffset(chartType: any, stacking: any, point: any) {
     return TOOLTIP_VERTICAL_OFFSET;
 }
 
-function positionTooltip(chartType: any, stacking: any, labelWidth: any, labelHeight: any, point: any) {
+export function getTooltipPositionInChartContainer(
+    chartType: string,
+    stacking: string,
+    labelWidth: number,
+    labelHeight: number,
+    point: IPointData,
+) {
     const dataPointEnd = getDataPointEnd(chartType, point.negative, point.plotX, point.h, stacking);
     const arrowPosition = getArrowHorizontalPosition(chartType, stacking, dataPointEnd, point.h);
     const chartWidth = this.chart.plotWidth;
@@ -235,146 +263,117 @@ function positionTooltip(chartType: any, stacking: any, labelWidth: any, labelHe
     const tooltipHorizontalStartingPosition = getTooltipHorizontalStartingPosition(
         arrowPosition,
         chartWidth,
-        labelWidth
+        labelWidth,
     );
 
     const verticalOffset = getTooltipVerticalOffset(chartType, stacking, point);
 
-    const dataPointStart = getDataPointStart(
-        chartType,
-        point.negative,
-        point.plotY,
-        point.h,
-        stacking
-    );
+    const dataPointStart = getDataPointStart(chartType, point.negative, point.plotY, point.h, stacking);
 
     return {
         x: this.chart.plotLeft + tooltipHorizontalStartingPosition,
-        y: (this.chart.plotTop + dataPointStart) - (labelHeight + verticalOffset)
+        y: this.chart.plotTop + dataPointStart - (labelHeight + verticalOffset),
     };
 }
 
-const showFullscreenTooltip = () => {
+function getHighchartTooltipTopOffset(chartType: string): number {
+    if (isBarChart(chartType) || isColumnChart(chartType) || isComboChart(chartType)) {
+        return BAR_COLUMN_TOOLTIP_TOP_OFFSET;
+    }
+    return HIGHCHARTS_TOOLTIP_TOP_LEFT_OFFSET;
+}
+
+function getHighchartTooltipLeftOffset(chartType: string): number {
+    if (isBarChart(chartType) || isColumnChart(chartType) || isComboChart(chartType)) {
+        return BAR_COLUMN_TOOLTIP_LEFT_OFFSET;
+    }
+    return HIGHCHARTS_TOOLTIP_TOP_LEFT_OFFSET;
+}
+
+export function getTooltipPositionInViewPort(
+    chartType: string,
+    stacking: string,
+    labelWidth: number,
+    labelHeight: number,
+    point: IPointData,
+) {
+    const { x, y } = getTooltipPositionInChartContainer.call(
+        this,
+        chartType,
+        stacking,
+        labelWidth,
+        labelHeight,
+        point,
+    );
+    const { top: containerTop, left: containerLeft } = this.chart.container.getBoundingClientRect();
+    const leftOffset = pageXOffset + containerLeft - getHighchartTooltipLeftOffset(chartType);
+    const topOffset = pageYOffset + containerTop - getHighchartTooltipTopOffset(chartType);
+
+    return {
+        x: isTooltipShownInFullScreen() ? leftOffset : leftOffset + x,
+        y: topOffset + y,
+    };
+}
+
+const isTooltipShownInFullScreen = () => {
     return document.documentElement.clientWidth <= TOOLTIP_FULLSCREEN_THRESHOLD;
 };
 
-function isPointBasedChart(chartType: string) {
-    const pointBasedTypes = [
-        VisualizationTypes.LINE,
-        VisualizationTypes.AREA,
-        VisualizationTypes.TREEMAP,
-        VisualizationTypes.SCATTER
-    ];
-    return isOneOfTypes(chartType, pointBasedTypes);
-}
-
-function formatTooltip(chartType: any, stacking: any, tooltipCallback: any) {
+function formatTooltip(tooltipCallback: any) {
     const { chart } = this.series;
     const { color: pointColor } = this.point;
+    const chartWidth = chart.spacingBox.width;
+    const isFullScreenTooltip = isTooltipShownInFullScreen();
+    const maxTooltipContentWidth = isFullScreenTooltip ? chartWidth : Math.min(chartWidth, TOOLTIP_MAX_WIDTH);
 
     // when brushing, do not show tooltip
     if (chart.mouseIsDown) {
         return false;
     }
 
-    const dataPointEnd = (
-        isPointBasedChart(chartType) ||
-        !this.point.tooltipPos
-    )
-        ? this.point.plotX
-        : getDataPointEnd(
-            chartType,
-            this.point.negative,
-            this.point.tooltipPos[0],
-            this.point.tooltipPos[2],
-            stacking
-        );
+    const strokeStyle = pointColor ? `border-top-color: ${pointColor};` : "";
+    const tooltipStyle = isFullScreenTooltip ? `width: ${maxTooltipContentWidth}px;` : "";
 
-    const ignorePointHeight =
-        isPointBasedChart(chartType) ||
-        !this.point.shapeArgs;
+    // null disables whole tooltip
+    const tooltipContent: string = tooltipCallback(this.point, maxTooltipContentWidth, this.percentage);
 
-    const dataPointHeight = ignorePointHeight ? 0 : this.point.shapeArgs.height;
-
-    const arrowPosition = getArrowHorizontalPosition(
-        chartType,
-        stacking,
-        dataPointEnd,
-        dataPointHeight
-    );
-
-    const chartWidth = chart.plotWidth;
-    const align = getArrowAlignment(arrowPosition, chartWidth);
-    const defaultArrowPosition = arrowPosition > chartWidth ? chartWidth  : arrowPosition * 2;
-    const arrowPositionForTail = getArrowPositionForTail(defaultArrowPosition, this.point, chartType, chart);
-
-    const strokeStyle = pointColor ? `border-top-color: ${pointColor};` : '';
-    const tailStyle = showFullscreenTooltip() ?
-        `style="left: ${arrowPositionForTail + chart.plotLeft}px;"` : '';
-
-    const getTailClasses = (classname: any) => {
-        return cx(classname, {
-            [align]: !showFullscreenTooltip()
-        });
-    };
-
-    const tooltipContent = tooltipCallback(this.point); // null disables whole tooltip
-
-    return tooltipContent !== null ? (
-        `<div class="hc-tooltip gd-viz-tooltip">
+    return tooltipContent !== null
+        ? `<div class="hc-tooltip gd-viz-tooltip" style="${tooltipStyle}">
             <span class="stroke gd-viz-tooltip-stroke" style="${strokeStyle}"></span>
-            <div class="content gd-viz-tooltip-content">
+            <div class="content gd-viz-tooltip-content" style="max-width: ${maxTooltipContentWidth}px;">
                 ${tooltipContent}
             </div>
-            <div class="${getTailClasses('gd-viz-tooltip-tail tail1 gd-viz-tooltip-tail1')}" ${tailStyle}></div>
-            <div class="${getTailClasses('gd-viz-tooltip-tail tail2 gd-viz-tooltip-tail2')}" ${tailStyle}></div>
         </div>`
-    ) : null;
-}
-
-function getArrowPositionForTail(defaultArrowPosition: number, point: any, chartType: any, chart: any) {
-    let arrowPositionForTail = defaultArrowPosition / 2;
-    if (isBarChart(chartType) && point.shapeArgs && chart) {
-        const visiblePart = getShapeVisiblePart(point.shapeArgs, chart, defaultArrowPosition);
-        arrowPositionForTail = visiblePart / 2;
-        // truncated shapes are moved to negative coordinates and tooltip needs compensation
-        if (point.shapeArgs.y < 0) {
-            arrowPositionForTail = chart.plotWidth - arrowPositionForTail;
-        }
-    }
-    return arrowPositionForTail;
+        : null;
 }
 
 function formatLabel(value: any, format: any, config: IChartConfig = {}) {
     // no labels for missing values
-    if (value === null) {
+    if (isNil(value)) {
         return null;
     }
 
-    const stripped = stripColors(format || '');
+    const stripped = stripColors(format || "");
     const { separators } = config;
     return escapeAngleBrackets(String(numberFormat(value, stripped, undefined, separators)));
 }
 
 function labelFormatter(config?: IChartConfig) {
-    return formatLabel(this.y, get(this, 'point.format'), config);
+    return formatLabel(this.y, get(this, "point.format"), config);
 }
 
-export function percentageDataLabelFormatter(config?: IChartConfig) {
+export function percentageDataLabelFormatter(config?: IChartConfig): string {
     // suppose that chart has one Y axis by default
-    const isSingleAxis = get(this, 'series.chart.yAxis.length', 1) === 1;
-    const isPrimaryAxis = !get(this, 'series.yAxis.opposite', false);
+    const isSingleAxis = get(this, "series.chart.yAxis.length", 1) === 1;
+    const isPrimaryAxis = !get(this, "series.yAxis.opposite", false);
 
-    if (isNil(this.percentage)) {
-        return '';
-    }
     // only format data labels to percentage for
     //  * left or right axis on single axis chart, or
     //  * primary axis on dual axis chart
-    if (isSingleAxis || isPrimaryAxis) {
-        const val = parseFloat((this.percentage).toFixed(2));
-        return `${val}%`;
+    if (this.percentage && (isSingleAxis || isPrimaryAxis)) {
+        return percentFormatter(this.percentage);
     }
+
     return labelFormatter.call(this, config);
 }
 
@@ -383,24 +382,31 @@ function labelFormatterHeatmap(options: any) {
 }
 
 function level1LabelsFormatter(config?: IChartConfig) {
-    return `${get(this, 'point.name')} (${formatLabel(get(this, 'point.node.val'),
-                                                        get(this, 'point.format'),
-                                                        config)})`;
+    return `${get(this, "point.name")} (${formatLabel(
+        get(this, "point.node.val"),
+        get(this, "point.format"),
+        config,
+    )})`;
 }
+
 function level2LabelsFormatter(config?: IChartConfig) {
-    return `${get(this, 'point.name')} (${formatLabel(get(this, 'point.value'), get(this, 'point.format'), config)})`;
+    return `${get(this, "point.name")} (${formatLabel(
+        get(this, "point.value"),
+        get(this, "point.format"),
+        config,
+    )})`;
 }
 
 function labelFormatterBubble(config?: IChartConfig) {
-    const value = get<number>(this, 'point.z');
+    const value = get(this, "point.z");
     if (isNil(value) || isNaN(value)) {
         return null;
     }
 
-    const xAxisMin = get(this, 'series.xAxis.min');
-    const xAxisMax = get(this, 'series.xAxis.max');
-    const yAxisMin = get(this, 'series.yAxis.min');
-    const yAxisMax = get(this, 'series.yAxis.max');
+    const xAxisMin = get(this, "series.xAxis.min");
+    const xAxisMax = get(this, "series.xAxis.max");
+    const yAxisMin = get(this, "series.yAxis.min");
+    const yAxisMax = get(this, "series.yAxis.max");
 
     if (
         (!isNil(xAxisMax) && this.x > xAxisMax) ||
@@ -410,12 +416,12 @@ function labelFormatterBubble(config?: IChartConfig) {
     ) {
         return null;
     } else {
-        return formatLabel(value, get(this, 'point.format'), config);
+        return formatLabel(value, get(this, "point.format"), config);
     }
 }
 
 function labelFormatterScatter() {
-    const name = get(this, 'point.name');
+    const name = get(this, "point.name");
     if (name) {
         return escapeAngleBrackets(name);
     }
@@ -435,34 +441,41 @@ function stackLabelFormatter(config?: IChartConfig) {
     // without negative values or with non-zero total for positive
     const showStackLabel =
         this.isNegative || hasOnlyPositiveValues(this.axis.series, this.x) || this.total !== 0;
-    return showStackLabel ?
-        formatLabel(this.total, get(this, 'axis.userOptions.defaultFormat'), config) : null;
+    return showStackLabel
+        ? formatLabel(this.total, get(this, "axis.userOptions.defaultFormat"), config)
+        : null;
 }
 
 function getTooltipConfiguration(chartOptions: IChartOptions) {
-    const tooltipAction = get(chartOptions, 'actions.tooltip');
+    const tooltipAction = get(chartOptions, "actions.tooltip");
     const chartType = chartOptions.type;
     const { stacking } = chartOptions;
 
-    const followPointer = isOneOfTypes(chartType, [VisualizationTypes.COLUMN, VisualizationTypes.BAR])
+    const followPointer = isOneOfTypes(chartType, supportedTooltipFollowPointerChartTypes)
         ? { followPointer: shouldFollowPointer(chartOptions) }
         : {};
 
-    return tooltipAction ? {
-        tooltip: {
-            borderWidth: 0,
-            borderRadius: 0,
-            shadow: false,
-            useHTML: true,
-            positioner: partial(positionTooltip, chartType, stacking),
-            formatter: partial(formatTooltip, chartType, stacking, tooltipAction),
-            ...followPointer
-        }
-    } : {};
+    return tooltipAction
+        ? {
+              tooltip: {
+                  borderWidth: 0,
+                  borderRadius: 0,
+                  shadow: false,
+                  useHTML: true,
+                  outside: true,
+                  positioner: partial(getTooltipPositionInViewPort, chartType, stacking),
+                  formatter: partial(formatTooltip, tooltipAction),
+                  ...followPointer,
+              },
+          }
+        : {};
 }
 
 function getTreemapLabelsConfiguration(
-    isMultiLevel: boolean, style: any, config?: IChartConfig, labelsConfig?: object
+    isMultiLevel: boolean,
+    style: any,
+    config?: IChartConfig,
+    labelsConfig?: object,
 ) {
     const smallLabelInCenter = {
         dataLabels: {
@@ -471,122 +484,87 @@ function getTreemapLabelsConfiguration(
             formatter: partial(level2LabelsFormatter, config),
             allowOverlap: false,
             style,
-            ...labelsConfig
-        }
+            ...labelsConfig,
+        },
     };
     if (isMultiLevel) {
         return {
             dataLabels: {
-                ...labelsConfig
+                ...labelsConfig,
             },
-            levels: [{
-                level: 1,
-                dataLabels: {
-                    enabled: true,
-                    align: 'left',
-                    verticalAlign: 'top',
-                    padding: 5,
-                    style: {
-                        ...style,
-                        fontSize: '14px'
+            levels: [
+                {
+                    level: 1,
+                    dataLabels: {
+                        enabled: true,
+                        align: "left",
+                        verticalAlign: "top",
+                        padding: 5,
+                        style: {
+                            ...style,
+                            fontSize: "14px",
+                        },
+                        formatter: partial(level1LabelsFormatter, config),
+                        allowOverlap: false,
+                        ...labelsConfig,
                     },
-                    formatter: partial(level1LabelsFormatter, config),
-                    allowOverlap: false,
-                    ...labelsConfig
-                }
-            }, {
-                level: 2,
-                ...smallLabelInCenter
-            }]
+                },
+                {
+                    level: 2,
+                    ...smallLabelInCenter,
+                },
+            ],
         };
     } else {
         return {
             dataLabels: {
-                ...labelsConfig
+                ...labelsConfig,
             },
-            levels: [{
-                level: 1,
-                ...smallLabelInCenter
-            }]
+            levels: [
+                {
+                    level: 1,
+                    ...smallLabelInCenter,
+                },
+            ],
         };
     }
-}
-
-export function getLabelsVisibilityConfig(visible: IDataLabelsVisible): any {
-    switch (visible) {
-        case 'auto':
-            return {
-                enabled: true,
-                allowOverlap: false
-            };
-        case true:
-            return {
-                enabled: true,
-                allowOverlap: true
-            };
-        case false:
-            return {
-                enabled: false
-            };
-        default: // keep decision on each chart for `undefined`
-            return {};
-    }
-}
-
-// types with label inside sections have white labels
-const whiteDataLabelTypes = [
-    VisualizationTypes.PIE,
-    VisualizationTypes.DONUT,
-    VisualizationTypes.TREEMAP,
-    VisualizationTypes.BUBBLE
-];
-
-function getLabelStyle(chartOptions: IChartOptions) {
-    const { stacking, type } = chartOptions;
-    const WHITE_LABEL = {
-        color: '#ffffff',
-        textShadow: '0 0 1px #000000'
-    };
-
-    const BLACK_LABEL = {
-        color: '#000000',
-        textShadow: 'none'
-    };
-
-    if (isAreaChart(type)) {
-        return BLACK_LABEL;
-    }
-    return (stacking || isOneOfTypes(type, whiteDataLabelTypes)) ? WHITE_LABEL : BLACK_LABEL;
 }
 
 function getLabelsConfiguration(chartOptions: IChartOptions, _config: any, chartConfig?: IChartConfig) {
     const { stacking, yAxes = [], type } = chartOptions;
 
-    const labelsVisible: IDataLabelsVisible = get<IDataLabelsVisible>(chartConfig, 'dataLabels.visible');
+    const labelsVisible: IDataLabelsVisible = get(chartConfig, "dataLabels.visible");
 
     const labelsConfig = getLabelsVisibilityConfig(labelsVisible);
 
-    const style = getLabelStyle(chartOptions);
+    const style = getLabelStyle(type, stacking);
 
-    const drilldown = stacking || isTreemap(type) ? {
-        activeDataLabelStyle: {
-            color: '#ffffff'
-        }
-    } : {};
+    const drilldown =
+        stacking || isTreemap(type)
+            ? {
+                  activeDataLabelStyle: {
+                      color: "#ffffff",
+                  },
+              }
+            : {};
 
     const yAxis = yAxes.map((axis: any) => ({
-        defaultFormat: get(axis, 'format')
+        defaultFormat: get(axis, "format"),
     }));
 
+    const series: ISeriesItem[] = get(chartOptions, "data.series", []);
+    const canStackInPercent = canComboChartBeStackedInPercent(series);
     const { stackMeasuresToPercent = false } = chartConfig || {};
+
     // only applied to bar, column, dual axis and area chart
-    const dataLabelFormatter = stackMeasuresToPercent ? percentageDataLabelFormatter : labelFormatter;
+    const dataLabelFormatter =
+        stackMeasuresToPercent && canStackInPercent ? percentageDataLabelFormatter : labelFormatter;
 
     const DEFAULT_LABELS_CONFIG = {
         formatter: partial(labelFormatter, chartConfig),
         style,
         allowOverlap: false,
-        ...labelsConfig
+        ...labelsConfig,
     };
 
     return {
@@ -594,60 +572,60 @@ function getLabelsConfiguration(chartOptions: IChartOptions, _config: any, chart
         plotOptions: {
             gdcOptions: {
                 dataLabels: {
-                    visible: labelsVisible
-                }
+                    visible: labelsVisible,
+                },
             },
             bar: {
                 dataLabels: {
                     ...DEFAULT_LABELS_CONFIG,
-                    formatter: partial(dataLabelFormatter, chartConfig)
-                }
+                    formatter: partial(dataLabelFormatter, chartConfig),
+                },
             },
             column: {
                 dataLabels: {
                     ...DEFAULT_LABELS_CONFIG,
-                    formatter: partial(dataLabelFormatter, chartConfig)
-                }
+                    formatter: partial(dataLabelFormatter, chartConfig),
+                },
             },
             heatmap: {
                 dataLabels: {
                     formatter: labelFormatterHeatmap,
                     config: chartConfig,
-                    ...labelsConfig
-                }
+                    ...labelsConfig,
+                },
             },
             treemap: {
-                ...getTreemapLabelsConfiguration(!!stacking, style, chartConfig, labelsConfig)
+                ...getTreemapLabelsConfiguration(!!stacking, style, chartConfig, labelsConfig),
             },
             line: {
-                dataLabels: DEFAULT_LABELS_CONFIG
+                dataLabels: DEFAULT_LABELS_CONFIG,
             },
             area: {
                 dataLabels: {
                     ...DEFAULT_LABELS_CONFIG,
-                    formatter: partial(dataLabelFormatter, chartConfig)
-                }
+                    formatter: partial(dataLabelFormatter, chartConfig),
+                },
             },
             scatter: {
                 dataLabels: {
                     ...DEFAULT_LABELS_CONFIG,
-                    formatter: partial(labelFormatterScatter, chartConfig)
-                }
+                    formatter: partial(labelFormatterScatter, chartConfig),
+                },
             },
             bubble: {
                 dataLabels: {
                     ...DEFAULT_LABELS_CONFIG,
-                    formatter: partial(labelFormatterBubble, chartConfig)
-                }
+                    formatter: partial(labelFormatterBubble, chartConfig),
+                },
             },
             pie: {
                 dataLabels: {
                     ...DEFAULT_LABELS_CONFIG,
-                    verticalAlign: 'middle'
-                }
-            }
+                    verticalAlign: "middle",
+                },
+            },
         },
-        yAxis
+        yAxis,
     };
 }
 
@@ -656,33 +634,35 @@ function getStackingConfiguration(chartOptions: IChartOptions, _config: any, cha
     let labelsConfig = {};
 
     if (isColumnChart(type)) {
-        const labelsVisible: IDataLabelsVisible = get<IDataLabelsVisible>(chartConfig, 'dataLabels.visible');
+        const labelsVisible: IDataLabelsVisible = get(chartConfig, "dataLabels.visible");
         labelsConfig = getLabelsVisibilityConfig(labelsVisible);
     }
 
     const yAxis = yAxes.map(() => ({
         stackLabels: {
             ...labelsConfig,
-            formatter: partial(stackLabelFormatter, chartConfig)
-        }
+            formatter: partial(stackLabelFormatter, chartConfig),
+        },
     }));
 
     let connectNulls = {};
     if (stacking && isAreaChart(type)) {
         connectNulls = {
-            connectNulls: true
+            connectNulls: true,
         };
     }
 
-    return stacking ? {
-        plotOptions: {
-            series: {
-                stacking, // this stacking config will be applied to all series
-                ...connectNulls
-            }
-        },
-        yAxis
-    } : {};
+    return stacking
+        ? {
+              plotOptions: {
+                  series: {
+                      stacking, // this stacking config will be applied to all series
+                      ...connectNulls,
+                  },
+              },
+              yAxis,
+          }
+        : {};
 }
 
 function getSeries(series: any) {
@@ -703,7 +683,7 @@ function getSeries(series: any) {
 
             return {
                 ...dataItem,
-                name: escapeAngleBrackets(dataItem.name)
+                name: escapeAngleBrackets(dataItem.name),
             };
         });
 
@@ -718,24 +698,30 @@ function getHeatmapDataConfiguration(chartOptions: IChartOptions) {
 
     return {
         series,
-        xAxis: [{
-            categories: categories[0] || []
-        }],
-        yAxis: [{
-            categories: categories[1] || []
-        }],
+        xAxis: [
+            {
+                categories: categories[0] || [],
+            },
+        ],
+        yAxis: [
+            {
+                categories: categories[1] || [],
+            },
+        ],
         colorAxis: {
-            dataClasses: get(chartOptions, 'colorAxis.dataClasses', [])
-        }
+            dataClasses: get(chartOptions, "colorAxis.dataClasses", []),
+        },
     };
 }
 
 export function escapeCategories(dataCategories: any) {
     return map(dataCategories, (category: any) => {
-        return isString(category) ? escapeAngleBrackets(category) : {
-            name: escapeAngleBrackets(category.name),
-            categories: map(category.categories, escapeAngleBrackets)
-        };
+        return isString(category)
+            ? escapeAngleBrackets(category)
+            : {
+                  name: escapeAngleBrackets(category.name),
+                  categories: map(category.categories, escapeAngleBrackets),
+              };
     });
 }
 
@@ -748,7 +734,7 @@ function getDataConfiguration(chartOptions: IChartOptions) {
         case VisualizationTypes.SCATTER:
         case VisualizationTypes.BUBBLE:
             return {
-                series
+                series,
             };
         case VisualizationTypes.HEATMAP:
             return getHeatmapDataConfiguration(chartOptions);
@@ -758,18 +744,20 @@ function getDataConfiguration(chartOptions: IChartOptions) {
 
     return {
         series,
-        xAxis: [{
-            categories
-        }]
+        xAxis: [
+            {
+                categories,
+            },
+        ],
     };
 }
 
 function lineSeriesMapFn(seriesOrig: any) {
     const series = cloneDeep(seriesOrig);
     if (series.isDrillable) {
-        set(series, 'marker.states.hover.fillColor', getLighterColor(series.color, HOVER_BRIGHTNESS));
+        set(series, "marker.states.hover.fillColor", getLighterColor(series.color, HOVER_BRIGHTNESS));
     } else {
-        set(series, 'states.hover.halo.size', 0);
+        set(series, "states.hover.halo.size", 0);
     }
 
     return series;
@@ -778,15 +766,15 @@ function lineSeriesMapFn(seriesOrig: any) {
 function barSeriesMapFn(seriesOrig: any) {
     const series = cloneDeep(seriesOrig);
 
-    set(series, 'states.hover.brightness', HOVER_BRIGHTNESS);
-    set(series, 'states.hover.enabled', series.isDrillable);
+    set(series, "states.hover.brightness", HOVER_BRIGHTNESS);
+    set(series, "states.hover.enabled", series.isDrillable);
 
     return series;
 }
 
 function getHeatMapHoverColor(config: any) {
-    const dataClasses = get(config, ['colorAxis', 'dataClasses'], null);
-    let resultColor = 'rgb(210,210,210)';
+    const dataClasses = get(config, ["colorAxis", "dataClasses"], null);
+    let resultColor = "rgb(210,210,210)";
 
     if (dataClasses) {
         if (dataClasses.length === 1) {
@@ -823,18 +811,19 @@ function getHoverStyles({ type }: any, config: any) {
                 const series = cloneDeep(seriesOrig);
                 const color = getHeatMapHoverColor(config);
 
-                set(series, 'states.hover.color', color);
-                set(series, 'states.hover.enabled', series.isDrillable);
+                set(series, "states.hover.color", color);
+                set(series, "states.hover.enabled", series.isDrillable);
 
                 return series;
             };
             break;
 
         case VisualizationTypes.COMBO:
-            seriesMapFn = (seriesOrig) => {
+        case VisualizationTypes.COMBO2:
+            seriesMapFn = seriesOrig => {
                 const { type } = seriesOrig;
 
-                if (type === 'line') {
+                if (type === "line") {
                     return lineSeriesMapFn(seriesOrig);
                 }
                 return barSeriesMapFn(seriesOrig);
@@ -844,24 +833,27 @@ function getHoverStyles({ type }: any, config: any) {
         case VisualizationTypes.PIE:
         case VisualizationTypes.DONUT:
         case VisualizationTypes.TREEMAP:
-            seriesMapFn = (seriesOrig) => {
+            seriesMapFn = seriesOrig => {
                 const series = cloneDeep(seriesOrig);
 
                 return {
                     ...series,
                     data: series.data.map((dataItemOrig: any) => {
                         const dataItem = cloneDeep(dataItemOrig);
-                        const drilldown = get(dataItem, 'drilldown');
+                        const drilldown = get(dataItem, "drilldown");
 
-                        set(dataItem, 'states.hover.brightness', drilldown ?
-                            HOVER_BRIGHTNESS : MINIMUM_HC_SAFE_BRIGHTNESS);
+                        set(
+                            dataItem,
+                            "states.hover.brightness",
+                            drilldown ? HOVER_BRIGHTNESS : MINIMUM_HC_SAFE_BRIGHTNESS,
+                        );
 
                         if (!drilldown) {
-                            set(dataItem, 'halo.size', 0); // see plugins/pointHalo.js
+                            set(dataItem, "halo.size", 0); // see plugins/pointHalo.js
                         }
 
                         return dataItem;
-                    })
+                    }),
                 };
             };
             break;
@@ -873,32 +865,35 @@ function getHoverStyles({ type }: any, config: any) {
                 VisualizationTypes.LINE,
                 VisualizationTypes.AREA,
                 VisualizationTypes.SCATTER,
-                VisualizationTypes.BUBBLE
-            ].reduce((conf: any, key) => ({
-                ...conf,
-                [key]: {
-                    point: {
-                        events: {
-                            // Workaround
-                            // from Highcharts 5.0.0 cursor can be set by using 'className' for individual data items
-                            mouseOver() {
-                                if (this.drilldown) {
-                                    this.graphic.element.style.cursor = 'pointer';
-                                }
-                            }
-                        }
-                    }
-                }
-            }), {})
-        }
+                VisualizationTypes.BUBBLE,
+            ].reduce(
+                (conf: any, key) => ({
+                    ...conf,
+                    [key]: {
+                        point: {
+                            events: {
+                                // Workaround
+                                // from Highcharts 5.0.0 cursor can be set by using 'className' for individual data items
+                                mouseOver() {
+                                    if (this.drilldown) {
+                                        this.graphic.element.style.cursor = "pointer";
+                                    }
+                                },
+                            },
+                        },
+                    },
+                }),
+                {},
+            ),
+        },
     };
 }
 
 function getGridConfiguration(chartOptions: IChartOptions) {
-    const gridEnabled = get(chartOptions, 'grid.enabled', true);
+    const gridEnabled = get(chartOptions, "grid.enabled", true);
     const { yAxes = [], xAxes = [] } = chartOptions;
 
-    const config = gridEnabled ? { gridLineWidth: 1, gridLineColor: '#ebebeb' } : { gridLineWidth: 0 };
+    const config = gridEnabled ? { gridLineWidth: 1, gridLineColor: "#ebebeb" } : { gridLineWidth: 0 };
 
     const yAxis = yAxes.map(() => config);
 
@@ -910,14 +905,14 @@ function getGridConfiguration(chartOptions: IChartOptions) {
 
     return {
         yAxis,
-        xAxis
+        xAxis,
     };
 }
 
 export function areAxisLabelsEnabled(
     chartOptions: IChartOptions,
     axisPropsName: string,
-    shouldCheckForEmptyCategories: boolean
+    shouldCheckForEmptyCategories: boolean,
 ) {
     const data = chartOptions.data || EMPTY_DATA;
 
@@ -931,14 +926,14 @@ export function areAxisLabelsEnabled(
     const categoriesFlag = shouldCheckForEmptyCategories ? !isEmpty(compact(categories)) : true;
 
     return {
-        enabled: categoriesFlag && visible && labelsEnabled
+        enabled: categoriesFlag && visible && labelsEnabled,
     };
 }
 
 function shouldExpandYAxis(chartOptions: IChartOptions) {
-    const min = get(chartOptions, 'xAxisProps.min', '');
-    const max = get(chartOptions, 'xAxisProps.max', '');
-    return min === '' && max === '' ? {} : { getExtremesFromAll: true };
+    const min = get(chartOptions, "xAxisProps.min", "");
+    const max = get(chartOptions, "xAxisProps.max", "");
+    return min === "" && max === "" ? {} : { getExtremesFromAll: true };
 }
 
 function getAxisLineConfiguration(chartType: ChartType, isAxisVisible: boolean) {
@@ -959,7 +954,7 @@ function getXAxisTickConfiguration(chartOptions: IChartOptions) {
     if (isBubbleChart(type) || isScatterPlot(type)) {
         return {
             startOnTick: shouldXAxisStartOnTickOnBubbleScatter(chartOptions),
-            endOnTick: false
+            endOnTick: false,
         };
     }
 
@@ -970,7 +965,7 @@ function getYAxisTickConfiguration(chartOptions: IChartOptions, axisPropsKey: st
     const { type, yAxes } = chartOptions;
     if (isBubbleChart(type) || isScatterPlot(type)) {
         return {
-            startOnTick: shouldYAxisStartOnTickOnBubbleScatter(chartOptions)
+            startOnTick: shouldYAxisStartOnTickOnBubbleScatter(chartOptions),
         };
     }
 
@@ -981,42 +976,51 @@ function getYAxisTickConfiguration(chartOptions: IChartOptions, axisPropsKey: st
 
     return {
         startOnTick: shouldStartOnTick(chartOptions, axisPropsKey),
-        endOnTick: shouldEndOnTick(chartOptions, axisPropsKey)
+        endOnTick: shouldEndOnTick(chartOptions, axisPropsKey),
     };
 }
 
 function getAxesConfiguration(chartOptions: IChartOptions) {
+    const { forceDisableDrillOnAxes = false } = chartOptions;
     const type = chartOptions.type as ChartType;
 
     return {
         plotOptions: {
             series: {
-                ...shouldExpandYAxis(chartOptions)
-            }
+                ...shouldExpandYAxis(chartOptions),
+            },
         },
-        yAxis: get(chartOptions, 'yAxes', []).map((axis: any) => {
+        yAxis: get(chartOptions, "yAxes", []).map((axis: any) => {
             if (!axis) {
                 return {
-                    visible: false
+                    visible: false,
                 };
             }
 
-            const opposite = get(axis, 'opposite', false);
-            const axisPropsKey = opposite ? 'secondary_yAxisProps' : 'yAxisProps';
+            const opposite = get(axis, "opposite", false);
+            const axisType: string = axis.opposite ? "secondary" : "primary";
+            const className: string = cx(`s-highcharts-${axisType}-yaxis`, {
+                "gd-axis-label-drilling-disabled": forceDisableDrillOnAxes,
+            });
+            const axisPropsKey = opposite ? "secondary_yAxisProps" : "yAxisProps";
 
             // For bar chart take x axis options
-            const min = get(chartOptions, `${axisPropsKey}.min`, '');
-            const max = get(chartOptions, `${axisPropsKey}.max`, '');
+            const min = get(chartOptions, `${axisPropsKey}.min`, "");
+            const max = get(chartOptions, `${axisPropsKey}.max`, "");
             const visible = get(chartOptions, `${axisPropsKey}.visible`, true);
 
             const maxProp = max ? { max: Number(max) } : {};
             const minProp = min ? { min: Number(min) } : {};
 
-            const rotation = get(chartOptions, `${axisPropsKey}.rotation`, 'auto');
-            const rotationProp = rotation !== 'auto' ? { rotation: -Number(rotation) } : {};
+            const rotation = get(chartOptions, `${axisPropsKey}.rotation`, "auto");
+            const rotationProp = rotation !== "auto" ? { rotation: -Number(rotation) } : {};
 
             const shouldCheckForEmptyCategories = isHeatmap(type) ? true : false;
-            const labelsEnabled = areAxisLabelsEnabled(chartOptions, axisPropsKey, shouldCheckForEmptyCategories);
+            const labelsEnabled = areAxisLabelsEnabled(
+                chartOptions,
+                axisPropsKey,
+                shouldCheckForEmptyCategories,
+            );
 
             const tickConfiguration = getYAxisTickConfiguration(chartOptions, axisPropsKey);
 
@@ -1026,48 +1030,56 @@ function getAxesConfiguration(chartOptions: IChartOptions) {
                     ...labelsEnabled,
                     style: {
                         color: styleVariables.gdColorStateBlank,
-                        font: '12px Avenir, "Helvetica Neue", Arial, sans-serif'
+                        font: '12px Avenir, "Helvetica Neue", Arial, sans-serif',
                     },
-                    ...rotationProp
+                    ...rotationProp,
                 },
                 title: {
                     enabled: visible,
                     margin: 15,
                     style: {
                         color: styleVariables.gdColorLink,
-                        font: '14px Avenir, "Helvetica Neue", Arial, sans-serif'
-                    }
+                        font: '14px Avenir, "Helvetica Neue", Arial, sans-serif',
+                    },
                 },
                 opposite,
+                className,
                 ...maxProp,
                 ...minProp,
-                ...tickConfiguration
+                ...tickConfiguration,
             };
         }),
 
-        xAxis: get(chartOptions, 'xAxes', []).map((axis: any) => {
+        xAxis: get(chartOptions, "xAxes", []).map((axis: any) => {
             if (!axis) {
                 return {
-                    visible: false
+                    visible: false,
                 };
             }
 
-            const opposite = get(axis, 'opposite', false);
-            const axisPropsKey = opposite ? 'secondary_xAxisProps' : 'xAxisProps';
+            const opposite = get(axis, "opposite", false);
+            const axisPropsKey = opposite ? "secondary_xAxisProps" : "xAxisProps";
+            const className: string = cx({
+                "gd-axis-label-drilling-disabled": forceDisableDrillOnAxes,
+            });
 
-            const min = get(chartOptions, axisPropsKey.concat('.min'), '');
-            const max = get(chartOptions, axisPropsKey.concat('.max'), '');
+            const min = get(chartOptions, axisPropsKey.concat(".min"), "");
+            const max = get(chartOptions, axisPropsKey.concat(".max"), "");
 
             const maxProp = max ? { max: Number(max) } : {};
             const minProp = min ? { min: Number(min) } : {};
 
-            const isViewByTwoAttributes = get(chartOptions, 'isViewByTwoAttributes', false);
-            const visible = get(chartOptions, axisPropsKey.concat('.visible'), true);
-            const rotation = get(chartOptions, axisPropsKey.concat('.rotation'), 'auto');
-            const rotationProp = rotation !== 'auto' ? { rotation: -Number(rotation) } : {};
+            const isViewByTwoAttributes = get(chartOptions, "isViewByTwoAttributes", false);
+            const visible = get(chartOptions, axisPropsKey.concat(".visible"), true);
+            const rotation = get(chartOptions, axisPropsKey.concat(".rotation"), "auto");
+            const rotationProp = rotation !== "auto" ? { rotation: -Number(rotation) } : {};
 
-            const shouldCheckForEmptyCategories = (isScatterPlot(type) || isBubbleChart(type)) ? false : true;
-            const labelsEnabled = areAxisLabelsEnabled(chartOptions, axisPropsKey, shouldCheckForEmptyCategories);
+            const shouldCheckForEmptyCategories = isScatterPlot(type) || isBubbleChart(type) ? false : true;
+            const labelsEnabled = areAxisLabelsEnabled(
+                chartOptions,
+                axisPropsKey,
+                shouldCheckForEmptyCategories,
+            );
 
             const tickConfiguration = getXAxisTickConfiguration(chartOptions);
 
@@ -1086,29 +1098,35 @@ function getAxesConfiguration(chartOptions: IChartOptions) {
                     ...labelsEnabled,
                     style: {
                         color: styleVariables.gdColorStateBlank,
-                        font: '12px Avenir, "Helvetica Neue", Arial, sans-serif'
+                        font: '12px Avenir, "Helvetica Neue", Arial, sans-serif',
                     },
                     autoRotation: [-90],
-                    ...rotationProp
+                    ...rotationProp,
                 },
                 title: {
                     // should disable X axis title when 'View By 2 attributes'
                     enabled: visible && !isViewByTwoAttributes,
                     margin: 10,
                     style: {
+                        textOverflow: "ellipsis",
                         color: styleVariables.gdColorLink,
-                        font: '14px Avenir, "Helvetica Neue", Arial, sans-serif'
-                    }
+                        font: '14px Avenir, "Helvetica Neue", Arial, sans-serif',
+                    },
                 },
+                className,
                 ...maxProp,
                 ...minProp,
-                ...tickConfiguration
+                ...tickConfiguration,
             };
-        })
+        }),
     };
 }
 
-export function getCustomizedConfiguration(chartOptions: IChartOptions, chartConfig?: IChartConfig) {
+export function getCustomizedConfiguration(
+    chartOptions: IChartOptions,
+    chartConfig?: IChartConfig,
+    drillConfig?: IDrillConfig,
+) {
     const configurators = [
         getAxesConfiguration,
         getTitleConfiguration,
@@ -1122,11 +1140,14 @@ export function getCustomizedConfiguration(chartOptions: IChartOptions, chartCon
         getLabelsConfiguration,
         // should be after 'getDataConfiguration' to modify 'series'
         // and should be after 'getStackingConfiguration' to get stackLabels config
-        getOptionalStackingConfiguration
+        getOptionalStackingConfiguration,
+        getZeroAlignConfiguration,
+        getAxisNameConfiguration,
+        getChartAlignmentConfiguration,
     ];
 
     const commonData = configurators.reduce((config: any, configurator: any) => {
-        return merge(config, configurator(chartOptions, config, chartConfig));
+        return merge(config, configurator(chartOptions, config, chartConfig, drillConfig));
     }, {});
 
     return merge({}, commonData);

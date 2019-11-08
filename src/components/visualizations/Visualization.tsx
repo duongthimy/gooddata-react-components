@@ -1,27 +1,21 @@
 // (C) 2007-2018 GoodData Corporation
-import * as React from 'react';
-import * as invariant from 'invariant';
-import { IHeaderPredicate } from '../../interfaces/HeaderPredicate';
-import isEqual = require('lodash/isEqual');
-import noop = require('lodash/noop');
-import isFunction = require('lodash/isFunction');
-import omitBy = require('lodash/omitBy');
-import { Highcharts } from './chart/Chart';
-import { IChartConfig } from '../../interfaces/Config';
-import { OnFiredDrillEvent } from '../../interfaces/Events';
+import * as React from "react";
+import * as invariant from "invariant";
+import { IHeaderPredicate } from "../../interfaces/HeaderPredicate";
+import isEqual = require("lodash/isEqual");
+import noop = require("lodash/noop");
+import isFunction = require("lodash/isFunction");
+import omitBy = require("lodash/omitBy");
+import Highcharts from "./chart/highcharts/highchartsEntryPoint";
+import { IChartConfig } from "../../interfaces/Config";
+import { OnFiredDrillEvent, OnDrill } from "../../interfaces/Events";
 
-import {
-    Execution
-} from '@gooddata/typings';
+import { Execution } from "@gooddata/typings";
 
-import {
-    isTable,
-    isChartSupported,
-    stringifyChartTypes
-} from './utils/common';
-import { TableTransformation } from './table/TableTransformation';
-import { IDrillableItem } from '../../interfaces/DrillEvents';
-import ChartTransformation, { IExecutionRequest, renderHighCharts } from './chart/ChartTransformation';
+import { isTable, isChartSupported, stringifyChartTypes } from "./utils/common";
+import { TableTransformation } from "./table/TableTransformation";
+import { IDrillableItem } from "../../interfaces/DrillEvents";
+import ChartTransformation, { IExecutionRequest, renderHighCharts } from "./chart/ChartTransformation";
 
 export interface IVisualizationProps {
     height: number;
@@ -36,6 +30,7 @@ export interface IVisualizationProps {
     locale?: string;
 
     onFiredDrillEvent?: OnFiredDrillEvent;
+    onDrill?: OnDrill;
     afterRender?: () => void;
     onDataTooLarge(): void;
     onNegativeValues(): void;
@@ -45,10 +40,11 @@ export interface IVisualizationProps {
 
 export class Visualization extends React.Component<IVisualizationProps> {
     public static defaultProps = {
-        locale: 'en-US',
+        locale: "en-US",
         numericSymbols: [] as string[],
         onFiredDrillEvent: () => true,
-        afterRender: noop
+        onDrill: noop,
+        afterRender: noop,
     };
 
     constructor(props: IVisualizationProps) {
@@ -71,8 +67,8 @@ export class Visualization extends React.Component<IVisualizationProps> {
         if (numericSymbols && numericSymbols.length) {
             Highcharts.setOptions({
                 lang: {
-                    numericSymbols
-                }
+                    numericSymbols,
+                },
             });
         }
     }
@@ -87,8 +83,8 @@ export class Visualization extends React.Component<IVisualizationProps> {
                     executionRequest={{
                         execution: {
                             afm: this.props.executionRequest.afm,
-                            resultSpec: this.props.executionRequest.resultSpec
-                        }
+                            resultSpec: this.props.executionRequest.resultSpec,
+                        },
                     }}
                 />
             );
@@ -104,12 +100,13 @@ export class Visualization extends React.Component<IVisualizationProps> {
                 executionResult,
                 drillableItems,
                 onFiredDrillEvent,
+                onDrill,
                 afterRender,
                 onDataTooLarge,
                 onNegativeValues,
                 onLegendReady,
                 locale,
-                pushData
+                pushData,
             } = this.props;
 
             return (
@@ -119,13 +116,12 @@ export class Visualization extends React.Component<IVisualizationProps> {
                     config={config}
                     drillableItems={drillableItems}
                     locale={locale}
-
                     executionRequest={executionRequest}
                     executionResponse={executionResponse}
                     executionResult={executionResult}
-
                     afterRender={afterRender}
                     onFiredDrillEvent={onFiredDrillEvent}
+                    onDrill={onDrill}
                     onDataTooLarge={onDataTooLarge}
                     onNegativeValues={onNegativeValues}
                     onLegendReady={onLegendReady}
@@ -135,8 +131,10 @@ export class Visualization extends React.Component<IVisualizationProps> {
             );
         }
 
-        invariant(false,
-            `Unknown visualization type: ${visType}. Supported visualization types: ${stringifyChartTypes()}`);
+        invariant(
+            false,
+            `Unknown visualization type: ${visType}. Supported visualization types: ${stringifyChartTypes()}`,
+        );
 
         return null;
     }

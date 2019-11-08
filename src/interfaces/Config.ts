@@ -1,27 +1,33 @@
 // (C) 2007-2019 GoodData Corporation
-import { ISeparators } from '@gooddata/numberjs';
-import { VisualizationObject } from '@gooddata/typings';
-import { IColorItem, IColor } from '@gooddata/gooddata-js';
-import { PositionType } from '../components/visualizations/typings/legend';
-import { VisType } from '../constants/visualizationTypes';
-import { IDataLabelsConfig } from '../interfaces/Config';
-import { IHeaderPredicate } from './HeaderPredicate';
-import { IMappingHeader } from './MappingHeader';
+import { ISeparators } from "@gooddata/numberjs";
+import { VisualizationObject } from "@gooddata/typings";
+import { IColorItem, IColor } from "@gooddata/gooddata-js";
+import Highcharts from "../components/visualizations/chart/highcharts/highchartsEntryPoint";
+import { PositionType } from "../components/visualizations/typings/legend";
+import { VisType } from "../constants/visualizationTypes";
+import { IDataLabelsConfig } from "../interfaces/Config";
+import { IHeaderPredicate } from "./HeaderPredicate";
+import { IMappingHeader } from "./MappingHeader";
 
-export { DEFAULT_COLOR_PALETTE } from '../components/visualizations/utils/color';
+export { DEFAULT_COLOR_PALETTE } from "../components/visualizations/utils/color";
 
 export type IDataLabelsVisible = string | boolean;
 
 export interface IDataLabelsConfig {
     visible?: IDataLabelsVisible;
+    width?: number;
+    padding?: number;
+    element?: Highcharts.HTMLDOMElement | Highcharts.SVGDOMElement;
 }
 
-export interface IColorMapping { // sent to SDK
+export interface IColorMapping {
+    // sent to SDK
     predicate: IHeaderPredicate;
     color: IColorItem;
 }
 
-export interface IColorAssignment { // << send from SDK up
+export interface IColorAssignment {
+    // << send from SDK up
     headerItem: IMappingHeader;
     color: IColorItem;
 }
@@ -75,6 +81,39 @@ export interface IChartConfig extends IMeasuresStackConfig {
     dualAxis?: boolean;
     primaryChartType?: VisualizationObject.VisualizationType;
     secondaryChartType?: VisualizationObject.VisualizationType;
+    forceDisableDrillOnAxes?: boolean;
+    disableDrillUnderline?: boolean;
+}
+
+export interface IStackLabels {
+    enabled?: boolean;
+}
+
+export interface IHighChartAxis {
+    AXIS_LINE_COLOR: string;
+    categories: string[];
+    opposite: boolean;
+    stackLabels: IStackLabels;
+    defaultFormat?: string;
+    gridLineColor?: string;
+    gridLineWidth?: number;
+    min?: number;
+    max?: number;
+    visible?: boolean;
+}
+
+export interface IYAxisConfig {
+    yAxis?: IHighChartAxis[];
+}
+
+export interface IStackMeasuresConfig {
+    series?: ISeriesItem[];
+    yAxis?: IHighChartAxis[];
+}
+
+export interface IAxisNameConfig {
+    visible?: boolean;
+    position?: Highcharts.AxisTitleAlignValue;
 }
 
 export interface IAxisConfig {
@@ -84,6 +123,10 @@ export interface IAxisConfig {
     min?: string;
     max?: string;
     measures?: string[];
+    stacks?: IStackItem;
+    series?: ISeriesItem[];
+    stackTotalGroup?: Highcharts.SVGAttributes;
+    name?: IAxisNameConfig;
 }
 
 export interface IAxis {
@@ -100,6 +143,11 @@ export interface ISeriesDataItem {
     name?: string;
 }
 
+export interface IStackItem {
+    column0?: Highcharts.StackItemObject[];
+    column?: ISeriesDataItem[];
+}
+
 export interface ISeriesItem {
     name?: string;
     data?: ISeriesDataItem[];
@@ -114,4 +162,102 @@ export interface ISeriesItem {
     labelKey?: string;
     stack?: number;
     stacking?: string;
+    dataLabels?: Highcharts.DataLabelsOptionsObject;
+    dataLabelsGroup?: Highcharts.SVGAttributes;
 }
+
+export interface IShapeArgsConfig {
+    width?: number;
+    heigth?: number;
+    x?: number;
+    y?: number;
+}
+
+export interface IChartOptions {
+    type?: string;
+    stacking?: string;
+    hasStackByAttribute?: boolean;
+    hasViewByAttribute?: boolean;
+    isViewByTwoAttributes?: boolean;
+    legendLayout?: string;
+    xAxes?: any;
+    yAxes?: any;
+    data?: any;
+    actions?: any;
+    grid?: any;
+    xAxisProps?: any;
+    yAxisProps?: any;
+    secondary_xAxisProps?: any;
+    secondary_yAxisProps?: any;
+    title?: any;
+    colorAxis?: Highcharts.ColorAxisOptions;
+    colorAssignments?: IColorAssignment[];
+    colorPalette?: IColorPalette;
+    forceDisableDrillOnAxes?: boolean;
+}
+
+export interface IPatternOptionsObject {
+    path: Highcharts.SVGAttributes;
+    width: number;
+    height: number;
+}
+export interface IPatternObject {
+    pattern: IPatternOptionsObject;
+}
+
+export interface IPointData {
+    /**
+     * Custom properties set by custom data options.
+     */
+    [property: string]: any;
+    x?: number;
+    y?: number;
+    z?: number;
+    value?: number;
+    format?: string;
+    marker?: {
+        enabled: boolean;
+    };
+    name?: string;
+    color?: string | IPatternObject;
+    legendIndex?: number;
+    id?: string;
+    parent?: string;
+    drilldown?: boolean;
+    drillIntersection?: any;
+    borderWidth?: number;
+    borderColor?: string;
+    pointPadding?: number;
+    series?: ISeriesItem;
+    category?: ICategory;
+}
+
+export interface ICategoryParent {
+    name: string;
+}
+
+// since applying 'grouped-categories' plugin, 'category' type is replaced from string to object in highchart
+export interface ICategory {
+    name: string;
+    parent?: ICategoryParent;
+}
+
+export interface ISeriesItemConfig {
+    color: string;
+    legendIndex: number;
+    data?: any;
+    name?: string;
+    yAxis?: number;
+    xAxis?: number;
+}
+
+export interface IClientRect {
+    width?: number;
+    height?: number;
+    left?: number;
+    right?: number;
+    x?: number;
+    y?: number;
+}
+
+export type ChartAlignTypes = "top" | "bottom" | "middle";

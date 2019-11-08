@@ -1,10 +1,10 @@
 // (C) 2007-2018 GoodData Corporation
-import * as React from 'react';
-import { storiesOf } from '@storybook/react';
-import { screenshotWrap } from '@gooddata/test-storybook';
+import * as React from "react";
+import { storiesOf } from "@storybook/react";
+import { screenshotWrap } from "@gooddata/test-storybook";
 
-import { LineChart } from '../../src';
-import { onErrorHandler } from '../mocks';
+import { LineChart } from "../../src";
+import { onErrorHandler } from "../mocks";
 import {
     ATTRIBUTE_1,
     ATTRIBUTE_1_WITH_ALIAS,
@@ -16,21 +16,22 @@ import {
     MEASURE_2_SORT_ITEM,
     MEASURE_WITH_FORMAT,
     ARITHMETIC_MEASURE_SIMPLE_OPERANDS,
-    ARITHMETIC_MEASURE_USING_ARITHMETIC
-} from '../data/componentProps';
-import { GERMAN_SEPARATORS } from '../data/numberFormat';
+    ARITHMETIC_MEASURE_USING_ARITHMETIC,
+} from "../data/componentProps";
+import { GERMAN_SEPARATORS } from "../data/numberFormat";
 import {
     DATA_LABELS_VISIBLE_CONFIG,
     DATA_LABELS_HIDDEN_CONFIG,
     DATA_LABELS_AUTO_CONFIG,
-    CUSTOM_COLOR_PALETTE_CONFIG
-} from '../data/configProps';
-import { ScreenshotReadyWrapper, createHighChartResolver } from '../utils/ScreenshotReadyWrapper';
+    CUSTOM_COLOR_PALETTE_CONFIG,
+} from "../data/configProps";
+import { ScreenshotReadyWrapper, createHighChartResolver } from "../utils/ScreenshotReadyWrapper";
+import { withAxisNamePositionConfig, withAxisNameVisibilityConfig } from "../hoc/withAxisName";
 
 const wrapperStyle = { width: 800, height: 400 };
 
-storiesOf('Core components/LineChart', module)
-    .add('two measures, one attribute', () => (
+storiesOf("Core components/LineChart", module)
+    .add("two measures, one attribute", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -41,10 +42,10 @@ storiesOf('Core components/LineChart', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('two measures, one attribute with alias', () => (
+            </div>,
+        ),
+    )
+    .add("two measures, one attribute with alias", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -55,10 +56,10 @@ storiesOf('Core components/LineChart', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('some measure with % format', () => (
+            </div>,
+        ),
+    )
+    .add("some measure with % format", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -69,10 +70,10 @@ storiesOf('Core components/LineChart', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('custom colors', () => (
+            </div>,
+        ),
+    )
+    .add("custom colors", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -84,9 +85,10 @@ storiesOf('Core components/LineChart', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    )).add('sorted by attribute', () => (
+            </div>,
+        ),
+    )
+    .add("sorted by attribute", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -98,10 +100,10 @@ storiesOf('Core components/LineChart', module)
                     ErrorComponent={null}
                     sortBy={[ATTRIBUTE_1_SORT_ITEM]}
                 />
-            </div>
-        )
-    ))
-    .add('sorted by measure', () => (
+            </div>,
+        ),
+    )
+    .add("sorted by measure", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -113,10 +115,10 @@ storiesOf('Core components/LineChart', module)
                     ErrorComponent={null}
                     sortBy={[MEASURE_2_SORT_ITEM]}
                 />
-            </div>
-        )
-    ))
-    .add('with German number format in tooltip', () => (
+            </div>,
+        ),
+    )
+    .add("with German number format in tooltip", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -128,9 +130,10 @@ storiesOf('Core components/LineChart', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    )).add('with disabled legend', () => (
+            </div>,
+        ),
+    )
+    .add("with disabled legend", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -142,14 +145,14 @@ storiesOf('Core components/LineChart', module)
                     ErrorComponent={null}
                     config={{
                         legend: {
-                            enabled: false
-                        }
+                            enabled: false,
+                        },
                     }}
                 />
-            </div>
-        )
-    ))
-    .add('with min/max configuration', () => (
+            </div>,
+        ),
+    )
+    .add("with min/max configuration", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -161,15 +164,15 @@ storiesOf('Core components/LineChart', module)
                     ErrorComponent={null}
                     config={{
                         yaxis: {
-                            min: '250',
-                            max: '900'
-                        }
+                            min: "250",
+                            max: "900",
+                        },
                     }}
                 />
-            </div>
-        )
-    ))
-    .add('with different legend positions', () => (
+            </div>,
+        ),
+    )
+    .add("with different legend positions", () =>
         screenshotWrap(
             <ScreenshotReadyWrapper resolver={createHighChartResolver(5)}>
                 <div>
@@ -184,8 +187,8 @@ storiesOf('Core components/LineChart', module)
                             ErrorComponent={null}
                             config={{
                                 legend: {
-                                    position: 'auto'
-                                }
+                                    position: "auto",
+                                },
                             }}
                         />
                     </div>
@@ -200,8 +203,8 @@ storiesOf('Core components/LineChart', module)
                             ErrorComponent={null}
                             config={{
                                 legend: {
-                                    position: 'left'
-                                }
+                                    position: "left",
+                                },
                             }}
                         />
                     </div>
@@ -216,8 +219,8 @@ storiesOf('Core components/LineChart', module)
                             ErrorComponent={null}
                             config={{
                                 legend: {
-                                    position: 'top'
-                                }
+                                    position: "top",
+                                },
                             }}
                         />
                     </div>
@@ -232,8 +235,8 @@ storiesOf('Core components/LineChart', module)
                             ErrorComponent={null}
                             config={{
                                 legend: {
-                                    position: 'right'
-                                }
+                                    position: "right",
+                                },
                             }}
                         />
                     </div>
@@ -248,16 +251,16 @@ storiesOf('Core components/LineChart', module)
                             ErrorComponent={null}
                             config={{
                                 legend: {
-                                    position: 'bottom'
-                                }
+                                    position: "bottom",
+                                },
                             }}
                         />
                     </div>
                 </div>
-            </ScreenshotReadyWrapper>
-        )
-    ))
-    .add('data labels config', () => (
+            </ScreenshotReadyWrapper>,
+        ),
+    )
+    .add("data labels config", () =>
         screenshotWrap(
             <ScreenshotReadyWrapper resolver={createHighChartResolver(4)}>
                 <div>
@@ -309,10 +312,10 @@ storiesOf('Core components/LineChart', module)
                         />
                     </div>
                 </div>
-            </ScreenshotReadyWrapper>
-        )
-    ))
-    .add('arithmetic measures', () => (
+            </ScreenshotReadyWrapper>,
+        ),
+    )
+    .add("arithmetic measures", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -321,17 +324,17 @@ storiesOf('Core components/LineChart', module)
                         MEASURE_1,
                         MEASURE_2,
                         ARITHMETIC_MEASURE_SIMPLE_OPERANDS,
-                        ARITHMETIC_MEASURE_USING_ARITHMETIC
+                        ARITHMETIC_MEASURE_USING_ARITHMETIC,
                     ]}
                     trendBy={ATTRIBUTE_1}
                     onError={onErrorHandler}
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('dual axes with two left measures, one right measure, one attribute', () => (
+            </div>,
+        ),
+    )
+    .add("dual axes with two left measures, one right measure, one attribute", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -339,18 +342,18 @@ storiesOf('Core components/LineChart', module)
                     measures={[MEASURE_1, MEASURE_2, MEASURE_3]}
                     config={{
                         secondary_yaxis: {
-                            measures: [MEASURE_3.measure.localIdentifier]
-                        }
+                            measures: [MEASURE_3.measure.localIdentifier],
+                        },
                     }}
                     trendBy={ATTRIBUTE_1}
                     onError={onErrorHandler}
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('only right axis with two measures, one attribute', () => (
+            </div>,
+        ),
+    )
+    .add("only right axis with two measures, one attribute", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <LineChart
@@ -358,14 +361,46 @@ storiesOf('Core components/LineChart', module)
                     measures={[MEASURE_1, MEASURE_2]}
                     config={{
                         secondary_yaxis: {
-                            measures: [MEASURE_1.measure.localIdentifier, MEASURE_2.measure.localIdentifier]
-                        }
+                            measures: [MEASURE_1.measure.localIdentifier, MEASURE_2.measure.localIdentifier],
+                        },
                     }}
                     trendBy={ATTRIBUTE_1}
                     onError={onErrorHandler}
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ));
+            </div>,
+        ),
+    )
+    .add("with axis name position", () =>
+        screenshotWrap(
+            withAxisNamePositionConfig(
+                <LineChart
+                    projectId="storybook"
+                    measures={[MEASURE_1, MEASURE_2]}
+                    config={{
+                        secondary_yaxis: {
+                            measures: [MEASURE_2.measure.localIdentifier],
+                        },
+                    }}
+                    trendBy={ATTRIBUTE_1}
+                />,
+            ),
+        ),
+    )
+    .add("with axis name visibility", () =>
+        screenshotWrap(
+            withAxisNameVisibilityConfig(
+                <LineChart
+                    projectId="storybook"
+                    measures={[MEASURE_1, MEASURE_2]}
+                    config={{
+                        secondary_yaxis: {
+                            measures: [MEASURE_2.measure.localIdentifier],
+                        },
+                    }}
+                    trendBy={ATTRIBUTE_1}
+                />,
+            ),
+        ),
+    );

@@ -1,26 +1,24 @@
-// (C) 2007-2018 GoodData Corporation
-import * as React from 'react';
-import * as classNames from 'classnames';
-import { uniqueId, noop } from 'lodash';
-import { Cell } from 'fixed-data-table-2';
-import { injectIntl, InjectedIntlProps } from 'react-intl';
-import { ISeparators } from '@gooddata/numberjs';
-import { VisualizationObject } from '@gooddata/typings';
-import { isMappingHeaderMeasureItem, IMappingHeader } from '../../../../interfaces/MappingHeader';
+// (C) 2007-2019 GoodData Corporation
+import * as React from "react";
+import * as classNames from "classnames";
+import noop = require("lodash/noop");
+import uniqueId = require("lodash/uniqueId");
+import { Cell } from "fixed-data-table-2";
+import { injectIntl, InjectedIntlProps } from "react-intl";
+import { ISeparators } from "@gooddata/numberjs";
+import { VisualizationObject } from "@gooddata/typings";
+import { isMappingHeaderMeasureItem, IMappingHeader } from "../../../../interfaces/MappingHeader";
 
-import {
-    DEFAULT_FOOTER_ROW_HEIGHT,
-    TOTALS_ADD_ROW_HEIGHT
-} from '../TableVisualization';
-import { getCellStyleAndFormattedValue } from '../../../../helpers/tableCell';
+import { getCellStyleAndFormattedValue } from "../../../../helpers/tableCell";
 import {
     getTotalsDataSource,
     hasTableColumnTotalEnabled,
     shouldShowAddTotalButton,
-    AVAILABLE_TOTALS
-} from './utils';
-import { AddTotal } from './AddTotal';
-import { ITotalWithData, IIndexedTotalItem } from '../../../../interfaces/Totals';
+    AVAILABLE_TOTALS,
+} from "./utils";
+import { AddTotal } from "./AddTotal";
+import { ITotalWithData, IIndexedTotalItem } from "../../../../interfaces/Totals";
+import { DEFAULT_FOOTER_ROW_HEIGHT, TOTALS_ADD_ROW_HEIGHT } from "../constants/layout";
 
 export interface ITotalCellProps {
     totalsWithData: ITotalWithData[];
@@ -50,7 +48,7 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
         onAddDropdownOpenStateChanged: noop,
         onAddWrapperHover: noop,
         onAddButtonHover: noop,
-        onRowAdd: noop
+        onRowAdd: noop,
     };
 
     public render() {
@@ -63,32 +61,34 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
             firstMeasureIndex,
             separators,
             onCellMouseOver,
-            onCellMouseLeave
+            onCellMouseLeave,
         } = this.props;
 
-        const isFirstColumn = (columnIndex === 0);
+        const isFirstColumn = columnIndex === 0;
         const measureColumnIndex = columnIndex - firstMeasureIndex;
         const isMeasureColumn = measureColumnIndex >= 0;
 
         const cellContent = totalsWithData.map((total, rowIndex) => {
             const classes = classNames(
-                'indigo-table-footer-cell',
+                "indigo-table-footer-cell",
                 `col-${columnIndex}`,
-                `s-total-${total.type}-${columnIndex}`
+                `s-total-${total.type}-${columnIndex}`,
             );
             const style = { height: DEFAULT_FOOTER_ROW_HEIGHT };
 
-            const events = editAllowed ? {
-                onMouseOver: () => {
-                    onCellMouseOver(rowIndex, columnIndex);
-                },
-                onMouseLeave: () => {
-                    onCellMouseLeave(rowIndex, columnIndex);
-                }
-            } : {};
+            const events = editAllowed
+                ? {
+                      onMouseOver: () => {
+                          onCellMouseOver(rowIndex, columnIndex);
+                      },
+                      onMouseLeave: () => {
+                          onCellMouseLeave(rowIndex, columnIndex);
+                      },
+                  }
+                : {};
 
             return (
-                <div {...events} key={uniqueId('footer-cell-')} className={classes} style={style}>
+                <div {...events} key={uniqueId("footer-cell-")} className={classes} style={style}>
                     {this.renderCellContent(
                         isFirstColumn,
                         isMeasureColumn,
@@ -96,7 +96,7 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
                         measureColumnIndex,
                         total,
                         header,
-                        separators
+                        separators,
                     )}
                 </div>
             );
@@ -110,11 +110,7 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
         );
     }
 
-    private renderAddTotalButton(
-        header: IMappingHeader,
-        columnIndex: number,
-        headersCount: number
-    ) {
+    private renderAddTotalButton(header: IMappingHeader, columnIndex: number, headersCount: number) {
         if (!shouldShowAddTotalButton(header, columnIndex === 0, true)) {
             return null;
         }
@@ -124,7 +120,7 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
             onAddDropdownOpenStateChanged,
             onAddWrapperHover,
             onAddButtonHover,
-            onRowAdd
+            onRowAdd,
         } = this.props;
 
         const dataSource = getTotalsDataSource(totalsWithData, intl);
@@ -152,10 +148,10 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
         const style = { height: TOTALS_ADD_ROW_HEIGHT };
 
         const className = classNames(
-            'indigo-table-footer-cell',
+            "indigo-table-footer-cell",
             `col-${columnIndex}`,
-            'indigo-totals-add-cell',
-            `s-total-add-cell-${columnIndex}`
+            "indigo-totals-add-cell",
+            `s-total-add-cell-${columnIndex}`,
         );
 
         return (
@@ -167,12 +163,9 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
 
     private renderHeaderCellContent(total: IIndexedTotalItem) {
         const { intl } = this.props;
-        const content = total.alias || intl.formatMessage({ id: `visualizations.totals.row.title.${total.type}` });
-        return (
-            <span className={classNames(`s-total-header-${total.type}`)}>
-                {content}
-            </span>
-        );
+        const content =
+            total.alias || intl.formatMessage({ id: `visualizations.totals.row.title.${total.type}` });
+        return <span className={classNames(`s-total-header-${total.type}`)}>{content}</span>;
     }
 
     private renderMeasureCellContent(
@@ -180,7 +173,7 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
         style: React.CSSProperties,
         total: IIndexedTotalItem,
         header: IMappingHeader,
-        columnIndex: number
+        columnIndex: number,
     ) {
         const { firstMeasureIndex, editAllowed } = this.props;
 
@@ -188,10 +181,16 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
             return null;
         }
 
-        const columnHasTotal = hasTableColumnTotalEnabled(total.outputMeasureIndexes, columnIndex, firstMeasureIndex);
+        const columnHasTotal = hasTableColumnTotalEnabled(
+            total.outputMeasureIndexes,
+            columnIndex,
+            firstMeasureIndex,
+        );
 
         const labelElement = (
-            <span className={classNames('s-total-value')} title={formattedValue} style={style}>{formattedValue}</span>
+            <span className={classNames("s-total-value")} title={formattedValue} style={style}>
+                {formattedValue}
+            </span>
         );
 
         if (editAllowed) {
@@ -200,8 +199,12 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
                 return (
                     <span>
                         <span
-                            className={classNames('button-link', 'button-icon-only', 'icon-circle-cross',
-                                'indigo-totals-disable-column-button', 's-disable-total-column'
+                            className={classNames(
+                                "gd-button-link",
+                                "gd-button-icon-only",
+                                "icon-circle-cross",
+                                "indigo-totals-disable-column-button",
+                                "s-disable-total-column",
                             )}
                             onClick={onClick}
                         />
@@ -213,8 +216,12 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
             const onClick = () => this.props.onEnableColumn(columnIndex, total.type);
             return (
                 <span
-                    className={classNames('button-link', 'button-icon-only', 'icon-circle-plus',
-                        'indigo-totals-enable-column-button', 's-enable-total-column'
+                    className={classNames(
+                        "gd-button-link",
+                        "gd-button-icon-only",
+                        "icon-circle-plus",
+                        "indigo-totals-enable-column-button",
+                        "s-enable-total-column",
                     )}
                     onClick={onClick}
                 />
@@ -235,22 +242,23 @@ export class TotalCellPure extends React.Component<ITotalCellProps & InjectedInt
         measureColumnIndex: number,
         total: ITotalWithData,
         header: IMappingHeader,
-        separators: ISeparators
+        separators: ISeparators,
     ) {
         if (isFirstColumn) {
             return this.renderHeaderCellContent(total);
         }
 
         if (isMeasureColumn) {
-            const value = total.values[measureColumnIndex] !== null
-                ? total.values[measureColumnIndex].toString()
-                : null;
+            const value =
+                total.values[measureColumnIndex] !== null
+                    ? total.values[measureColumnIndex].toString()
+                    : null;
 
             const { formattedValue, style } = getCellStyleAndFormattedValue(header, value, false, separators);
             return this.renderMeasureCellContent(formattedValue, style, total, header, columnIndex);
         }
 
-        return '';
+        return "";
     }
 }
 

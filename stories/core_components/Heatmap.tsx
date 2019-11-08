@@ -1,35 +1,38 @@
 // (C) 2007-2018 GoodData Corporation
-import * as React from 'react';
-import { storiesOf } from '@storybook/react';
-import { screenshotWrap } from '@gooddata/test-storybook';
+import * as React from "react";
+import { storiesOf } from "@storybook/react";
+import { screenshotWrap } from "@gooddata/test-storybook";
 
-import { Heatmap } from '../../src/index';
-import { onErrorHandler } from '../mocks';
+import { Heatmap } from "../../src/index";
+import { onErrorHandler } from "../mocks";
 import {
     ATTRIBUTE_1,
     ATTRIBUTE_2,
     ATTRIBUTE_3,
     MEASURE_1,
+    MEASURE_1_WITH_LONG_NAME_AND_FORMAT,
     MEASURE_2,
     ATTRIBUTE_1_WITH_ALIAS,
     ATTRIBUTE_COUNTRY,
-    ATTRIBUTE_POPULARITY
-} from '../data/componentProps';
-import { GERMAN_SEPARATORS } from '../data/numberFormat';
+    ATTRIBUTE_POPULARITY,
+    MEASURE_WITH_NULLS,
+} from "../data/componentProps";
+import { GERMAN_SEPARATORS } from "../data/numberFormat";
 import {
     DATA_LABELS_VISIBLE_CONFIG,
     DATA_LABELS_HIDDEN_CONFIG,
     DATA_LABELS_AUTO_CONFIG,
-    CUSTOM_COLOR_PALETTE_CONFIG
-} from '../data/configProps';
-import { localIdentifierMatch } from '../../src/factory/HeaderPredicateFactory';
-import { ScreenshotReadyWrapper, createHighChartResolver } from '../utils/ScreenshotReadyWrapper';
+    CUSTOM_COLOR_PALETTE_CONFIG,
+} from "../data/configProps";
+import { localIdentifierMatch } from "../../src/factory/HeaderPredicateFactory";
+import { ScreenshotReadyWrapper, createHighChartResolver } from "../utils/ScreenshotReadyWrapper";
+import { withAxisNamePositionConfig, withAxisNameVisibilityConfig } from "../hoc/withAxisName";
 
 const wrapperStyle = { width: 800, height: 400 };
 const wrapperWiderStyle = { width: 1000, height: 400 };
 
-storiesOf('Core components/Heatmap', module)
-    .add('metric row column', () => (
+storiesOf("Core components/Heatmap", module)
+    .add("metric row column", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -41,10 +44,10 @@ storiesOf('Core components/Heatmap', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('metric only', () => (
+            </div>,
+        ),
+    )
+    .add("metric only", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -54,10 +57,10 @@ storiesOf('Core components/Heatmap', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('metric and rows', () => (
+            </div>,
+        ),
+    )
+    .add("metric and rows", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -68,10 +71,10 @@ storiesOf('Core components/Heatmap', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('metric and columns', () => (
+            </div>,
+        ),
+    )
+    .add("metric and columns", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -82,10 +85,10 @@ storiesOf('Core components/Heatmap', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('metric row column with row alias', () => (
+            </div>,
+        ),
+    )
+    .add("metric row column with row alias", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -97,10 +100,10 @@ storiesOf('Core components/Heatmap', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('metric row column with cloumn alias', () => (
+            </div>,
+        ),
+    )
+    .add("metric row column with cloumn alias", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -112,10 +115,10 @@ storiesOf('Core components/Heatmap', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('with German number format', () => (
+            </div>,
+        ),
+    )
+    .add("with German number format", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -128,10 +131,10 @@ storiesOf('Core components/Heatmap', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('with left out some label of yaxis', () => (
+            </div>,
+        ),
+    )
+    .add("with left out some label of yaxis", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -143,10 +146,10 @@ storiesOf('Core components/Heatmap', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('with last label of yaxis exceed top grid line', () => (
+            </div>,
+        ),
+    )
+    .add("with last label of yaxis exceed top grid line", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -158,10 +161,10 @@ storiesOf('Core components/Heatmap', module)
                     LoadingComponent={null}
                     ErrorComponent={null}
                 />
-            </div>
-        )
-    ))
-    .add('with disabled legend', () => (
+            </div>,
+        ),
+    )
+    .add("with disabled legend", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -174,14 +177,14 @@ storiesOf('Core components/Heatmap', module)
                     ErrorComponent={null}
                     config={{
                         legend: {
-                            enabled: false
-                        }
+                            enabled: false,
+                        },
                     }}
                 />
-            </div>
-        )
-    ))
-    .add('with different legend positions', () => (
+            </div>,
+        ),
+    )
+    .add("with different legend positions", () =>
         screenshotWrap(
             <ScreenshotReadyWrapper resolver={createHighChartResolver(5)}>
                 <div>
@@ -197,8 +200,8 @@ storiesOf('Core components/Heatmap', module)
                             ErrorComponent={null}
                             config={{
                                 legend: {
-                                    position: 'auto'
-                                }
+                                    position: "auto",
+                                },
                             }}
                         />
                     </div>
@@ -214,8 +217,8 @@ storiesOf('Core components/Heatmap', module)
                             ErrorComponent={null}
                             config={{
                                 legend: {
-                                    position: 'left'
-                                }
+                                    position: "left",
+                                },
                             }}
                         />
                     </div>
@@ -231,8 +234,8 @@ storiesOf('Core components/Heatmap', module)
                             ErrorComponent={null}
                             config={{
                                 legend: {
-                                    position: 'top'
-                                }
+                                    position: "top",
+                                },
                             }}
                         />
                     </div>
@@ -248,8 +251,8 @@ storiesOf('Core components/Heatmap', module)
                             ErrorComponent={null}
                             config={{
                                 legend: {
-                                    position: 'right'
-                                }
+                                    position: "right",
+                                },
                             }}
                         />
                     </div>
@@ -265,15 +268,16 @@ storiesOf('Core components/Heatmap', module)
                             ErrorComponent={null}
                             config={{
                                 legend: {
-                                    position: 'bottom'
-                                }
+                                    position: "bottom",
+                                },
                             }}
                         />
                     </div>
                 </div>
-            </ScreenshotReadyWrapper>
-        )
-    )).add('data labels config', () => (
+            </ScreenshotReadyWrapper>,
+        ),
+    )
+    .add("data labels config", () =>
         screenshotWrap(
             <ScreenshotReadyWrapper resolver={createHighChartResolver(4)}>
                 <div>
@@ -321,9 +325,10 @@ storiesOf('Core components/Heatmap', module)
                         />
                     </div>
                 </div>
-            </ScreenshotReadyWrapper>
-        )
-    )).add('custom colors', () => (
+            </ScreenshotReadyWrapper>,
+        ),
+    )
+    .add("custom colors", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -336,9 +341,10 @@ storiesOf('Core components/Heatmap', module)
                     ErrorComponent={null}
                     config={CUSTOM_COLOR_PALETTE_CONFIG}
                 />
-            </div>
-        )
-    )).add('custom colors with color mapping', () => (
+            </div>,
+        ),
+    )
+    .add("custom colors with color mapping", () =>
         screenshotWrap(
             <div style={wrapperStyle}>
                 <Heatmap
@@ -352,15 +358,69 @@ storiesOf('Core components/Heatmap', module)
                     config={{
                         colorMapping: [
                             {
-                                predicate: localIdentifierMatch('m1'),
+                                predicate: localIdentifierMatch("m1"),
                                 color: {
-                                    type: 'guid',
-                                    value: '2'
-                                }
-                            }
-                        ]
+                                    type: "guid",
+                                    value: "2",
+                                },
+                            },
+                        ],
                     }}
                 />
-            </div>
-        )
-    ));
+            </div>,
+        ),
+    )
+    .add("Heatmap with null data point", () =>
+        screenshotWrap(
+            <div style={wrapperStyle}>
+                <Heatmap
+                    projectId="storybook"
+                    measure={MEASURE_WITH_NULLS}
+                    columns={ATTRIBUTE_1}
+                    rows={ATTRIBUTE_2}
+                    onError={onErrorHandler}
+                    LoadingComponent={null}
+                    ErrorComponent={null}
+                />
+            </div>,
+        ),
+    )
+    .add("tooltip for chart with small width and long names", () =>
+        screenshotWrap(
+            <div style={{ width: 400, height: 400 }}>
+                <Heatmap
+                    projectId="storybook"
+                    measure={MEASURE_1_WITH_LONG_NAME_AND_FORMAT}
+                    columns={ATTRIBUTE_1}
+                    rows={ATTRIBUTE_2}
+                    onError={onErrorHandler}
+                    LoadingComponent={null}
+                    ErrorComponent={null}
+                />
+            </div>,
+        ),
+    )
+    .add("with axis name position", () =>
+        screenshotWrap(
+            withAxisNamePositionConfig(
+                <Heatmap
+                    projectId="storybook"
+                    measure={MEASURE_1}
+                    rows={ATTRIBUTE_1}
+                    columns={ATTRIBUTE_2}
+                />,
+            ),
+        ),
+    )
+    .add("with axis name visibility", () =>
+        screenshotWrap(
+            withAxisNameVisibilityConfig(
+                <Heatmap
+                    projectId="storybook"
+                    measure={MEASURE_1}
+                    rows={ATTRIBUTE_1}
+                    columns={ATTRIBUTE_2}
+                />,
+            ),
+        ),
+    );
