@@ -40,7 +40,7 @@ export class HeadlineOnDrillExample extends ExampleWithOnDrill {
                         <Headline
                             projectId={projectId}
                             primaryMeasure={primaryMeasure}
-                            secondaryMeasure={secondaryMeasure}
+                            //secondaryMeasure={secondaryMeasure}
                             onLoadingChanged={this.onLoadingChanged}
                             onError={this.onError}
                             onDrill={this.onDrill}

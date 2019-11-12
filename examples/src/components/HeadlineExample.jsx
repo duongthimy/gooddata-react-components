@@ -30,10 +30,12 @@ export class HeadlineExample extends Component {
                         }
                     `}
                 </style>
+
                 <div className="column">
                     <Headline
                         projectId={projectId}
                         primaryMeasure={primaryMeasure}
+                        secondaryMeasure={secondaryMeasure}
                         onLoadingChanged={this.onLoadingChanged}
                         onError={this.onError}
                     />
@@ -42,7 +44,6 @@ export class HeadlineExample extends Component {
                     <Headline
                         projectId={projectId}
                         primaryMeasure={primaryMeasure}
-                        secondaryMeasure={secondaryMeasure}
                         onLoadingChanged={this.onLoadingChanged}
                         onError={this.onError}
                     />
