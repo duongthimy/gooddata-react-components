@@ -1,9 +1,10 @@
-// (C) 2007-2019 GoodData Corporation
+// (C) 2007-2020 GoodData Corporation
 import React from "react";
 
 import ExampleWithSource from "../components/utils/ExampleWithSource";
 
 import BarChartExample from "../components/BarChartExample";
+import BarChartExample2 from "../components/BarChartExample2";
 import ColumnChartExample from "../components/ColumnChartExample";
 import LineChartExample from "../components/LineChartExample";
 import AreaChartExample from "../components/AreaChartExample";
@@ -20,6 +21,7 @@ import HeadlineExample from "../components/HeadlineExample";
 import KpiExample from "../components/KpiExample";
 
 import BarChartExampleSRC from "!raw-loader!../components/BarChartExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
+import BarChartExampleSRC2 from "!raw-loader!../components/BarChartExample2";
 import ColumnChartExampleSRC from "!raw-loader!../components/ColumnChartExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import LineChartExampleSRC from "!raw-loader!../components/LineChartExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import AreaChartExampleSRC from "!raw-loader!../components/AreaChartExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
@@ -48,6 +50,11 @@ export const BasicComponents = () => (
 
         <h2 id="bar-chart">Bar chart</h2>
         <ExampleWithSource for={BarChartExample} source={BarChartExampleSRC} />
+
+        <hr className="separator" />
+
+        <h2 id="bar-chart">Bar chart 2</h2>
+        <ExampleWithSource for={BarChartExample2} source={BarChartExampleSRC2} />
 
         <hr className="separator" />
 

@@ -1,9 +1,9 @@
-// (C) 2007-2019 GoodData Corporation
+// (C) 2007-2020 GoodData Corporation
 
 const demoProject = {
     "https://secure.gooddata.com": "k26dtejorcqlqf11crn6imbeevp2q4kg",
-    "https://staging3.intgdc.com": "kytra720hke4d84e8ozohoz7uycn53mi",
-    "https://staging2.intgdc.com": "ws7pxsamkx8o0t1s7kfvkj5o41uwcmqg",
+    "https://staging3.intgdc.com": "ht3owbpk6h0yfjtkcsgva3osu3z7paol",
+    "https://staging2.intgdc.com": "exveshu0intwbr4nk6ao8ft6vesjiqus",
     "https://staging.intgdc.com": "na1q8a0q4efb7cajbgre9mmm776dr1yv",
     "https://developer.na.gooddata.com": "xms7ga4tf3g3nzucd8380o2bev8oeknp",
 };
@@ -23,32 +23,34 @@ export const projectId = demoProjectId;
 
 export const averageCheckSizeByServer = "afewRzGAersh";
 export const averageDailyTotalSales = "aagJGHg1bxap";
-export const barVisualizationIdentifier = "aaKaMZUJeyGo";
-export const barVisualizationUri = `/gdc/md/${demoProjectId}/obj/9285`;
+export const barVisualizationIdentifier = "aabESA6qfobY";
+export const barVisualizationUri = `/gdc/md/${demoProjectId}/obj/10177`;
 export const dualAxisBarVisualizationIdentifier = "acSoPx4Mc7Rr";
-export const lineVisualizationIdentifier = "aaAaDFt4c1yC";
-export const lineVisualizationUri = `/gdc/md/${demoProjectId}/obj/9276`;
-export const areaVisualizationIdentifier = "acCaGDIrc1iU";
-export const areaVisualizationUri = `/gdc/md/${demoProjectId}/obj/9278`;
-export const headlineVisualizationIdentifier = "aaiaOcMqbyMj";
-export const headlineVisualizationUri = `/gdc/md/${demoProjectId}/obj/9279`;
-export const scatterVisualizationIdentifier = "ab4aHg6lej5e";
-export const scatterVisualizationUri = `/gdc/md/${demoProjectId}/obj/9277`;
-export const bubbleVisualizationIdentifier = "abNaJG2Aed2M";
-export const bubbleVisualizationUri = `/gdc/md/${demoProjectId}/obj/9280`;
-export const pieVisualizationIdentifier = "aaraOcrmdjZd";
-export const pieVisualizationUri = `/gdc/md/${demoProjectId}/obj/9281`;
-export const donutVisualizationIdentifier = "absaJEALgcdO";
-export const donutVisualizationUri = `/gdc/md/${demoProjectId}/obj/9282`;
-export const treemapVisualizationIdentifier = "aajaObFleXdD";
-export const treemapVisualizationUri = `/gdc/md/${demoProjectId}/obj/9283`;
-export const heatmapVisualizationIdentifier = "abkaJfMYiiCU";
-export const heatmapVisualizationUri = `/gdc/md/${demoProjectId}/obj/9284`;
+export const lineVisualizationIdentifier = "aaeERg1qcRuX";
+export const lineVisualizationUri = `/gdc/md/${demoProjectId}/obj/10178`;
+export const areaVisualizationIdentifier = "aabETaqQdz6J";
+export const areaVisualizationUri = `/gdc/md/${demoProjectId}/obj/10179`;
+export const headlineVisualizationIdentifier = "aamERm18cRvs";
+export const headlineVisualizationUri = `/gdc/md/${demoProjectId}/obj/10180`;
+export const scatterVisualizationIdentifier = "aadETzcxdMG4";
+export const scatterVisualizationUri = `/gdc/md/${demoProjectId}/obj/10181`;
+export const bubbleVisualizationIdentifier = "aaiETx3DdLW9";
+export const bubbleVisualizationUri = `/gdc/md/${demoProjectId}/obj/10182`;
+export const pieVisualizationIdentifier = "aapESfYdfbT3";
+export const pieVisualizationUri = `/gdc/md/${demoProjectId}/obj/10183`;
+export const donutVisualizationIdentifier = "aamESCiPfn8R";
+export const donutVisualizationUri = `/gdc/md/${demoProjectId}/obj/10184`;
+export const treemapVisualizationIdentifier = "aamETJ60fNus";
+export const treemapVisualizationUri = `/gdc/md/${demoProjectId}/obj/10185`;
+export const heatmapVisualizationIdentifier = "aaeEUveEd60C";
+export const heatmapVisualizationUri = `/gdc/md/${demoProjectId}/obj/10186`;
 export const columnsVisualizationIdentifier = "aabOspdLbbvs";
 export const columnVisualizationIdentifier = "acFJltTsifSQ";
 export const columnVisualizationUri = `/gdc/md/${demoProjectId}/obj/6862`;
-export const comboVisualizationIdentifier = "aaTJJW6adsaj";
-export const comboVisualizationUri = `/gdc/md/${demoProjectId}/obj/9304`;
+export const comboVisualizationIdentifier = "aacEW0WNe2EZ";
+export const comboVisualizationUri = `/gdc/md/${demoProjectId}/obj/10187`;
+export const xirrVisualizationIdentifier = "aadE2RdvheBe";
+export const xirrVisualizationUri = `/gdc/md/${demoProjectId}/obj/10203`;
 export const dateDatasetIdentifier = "date.dataset.dt";
 export const dateDataSetUri = `/gdc/md/${demoProjectId}/obj/2180`;
 export const employeeNameIdentifier = "label.employee.employeename";
