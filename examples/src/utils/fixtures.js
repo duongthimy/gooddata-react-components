@@ -4,7 +4,7 @@ const demoProject = {
     'https://secure.gooddata.com': 'k26dtejorcqlqf11crn6imbeevp2q4kg',
     'https://staging3.intgdc.com': 'ht3owbpk6h0yfjtkcsgva3osu3z7paol',
     'https://staging2.intgdc.com': 'exveshu0intwbr4nk6ao8ft6vesjiqus',
-    'https://staging.intgdc.com': 'na1q8a0q4efb7cajbgre9mmm776dr1yv',
+    'https://staging.intgdc.com': 'xskxypodp5s4p2t6x99b2szivf8qi3st',
     'https://developer.na.gooddata.com': 'xms7ga4tf3g3nzucd8380o2bev8oeknp'
 };
 
