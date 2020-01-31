@@ -1,5 +1,8 @@
 {
   "name": "@gooddata/react-components",
+  "engines": {
+    "node": "^8.10.0"
+  },
   "version": "7.3.0-beta.32",
   "description": "GoodData.UI - A powerful JavaScript library for building analytical applications",
   "main": "dist/index.js",
