@@ -1,4 +1,4 @@
-// (C) 2007-2019 GoodData Corporation
+// (C) 2007-2020 GoodData Corporation
 import React from "react";
 
 import ExampleWithSource from "../components/utils/ExampleWithSource";
@@ -6,11 +6,13 @@ import MeasureValueFilterExample from "../components/MeasureValueFilterExample";
 import MeasureValueFilterShownInPercentageExample from "../components/MeasureValueFilterShownInPercentageExample";
 import MeasureValueFilterStackedToHundredPercentExample from "../components/MeasureValueFilterStackedToHundredPercentExample";
 import MeasureValueFilterFormattedInPercentageExample from "../components/MeasureValueFilterFormattedInPercentageExample";
+import MeasureValueFilterVisualizationSimpleMeasure from "../components/MeasureValueFilterVisualizationSimpleMeasure";
 
 import MeasureValueFilterExampleSRC from "!raw-loader!../components/MeasureValueFilterExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import MeasureValueFilterShownInPercentageExampleSRC from "!raw-loader!../components/MeasureValueFilterShownInPercentageExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import MeasureValueFilterStackedToHundredPercentExampleSRC from "!raw-loader!../components/MeasureValueFilterStackedToHundredPercentExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import MeasureValueFilterFormattedInPercentageExampleSRC from "!raw-loader!../components/MeasureValueFilterFormattedInPercentageExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
+import MeasureValueFilterVisualizationSimpleMeasure from "!raw-loader!../components/MeasureValueFilterVisualizationSimpleMeasure";
 
 export const MeasureValueFilter = () => (
     <div>
@@ -61,6 +63,17 @@ export const MeasureValueFilter = () => (
             <ExampleWithSource
                 for={MeasureValueFilterFormattedInPercentageExample}
                 source={MeasureValueFilterFormattedInPercentageExampleSRC}
+            />
+        </div>
+        <h2>Measure value filter Visualization Simple Measure</h2>
+        <p>
+            Can embed Visualization component which applying measure value filter into Live Example
+            successfully
+        </p>
+        <div className="s-measure-value-filter-example-4">
+            <ExampleWithSource
+                for={MeasureValueFilterVisualizationSimpleMeasure}
+                source={MeasureValueFilterVisualizationSimpleMeasure}
             />
         </div>
     </div>
