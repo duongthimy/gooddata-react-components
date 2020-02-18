@@ -12,7 +12,7 @@ import MeasureValueFilterExampleSRC from "!raw-loader!../components/MeasureValue
 import MeasureValueFilterShownInPercentageExampleSRC from "!raw-loader!../components/MeasureValueFilterShownInPercentageExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import MeasureValueFilterStackedToHundredPercentExampleSRC from "!raw-loader!../components/MeasureValueFilterStackedToHundredPercentExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import MeasureValueFilterFormattedInPercentageExampleSRC from "!raw-loader!../components/MeasureValueFilterFormattedInPercentageExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
-import MeasureValueFilterVisualizationSimpleMeasure from "!raw-loader!../components/MeasureValueFilterVisualizationSimpleMeasure";
+import MeasureValueFilterVisualizationSimpleMeasureSRC from "!raw-loader!../components/MeasureValueFilterVisualizationSimpleMeasure";
 
 export const MeasureValueFilter = () => (
     <div>
@@ -70,10 +70,10 @@ export const MeasureValueFilter = () => (
             Can embed Visualization component which applying measure value filter into Live Example
             successfully
         </p>
-        <div className="s-measure-value-filter-example-4">
+        <div className="s-measure-value-filter-example-5">
             <ExampleWithSource
                 for={MeasureValueFilterVisualizationSimpleMeasure}
-                source={MeasureValueFilterVisualizationSimpleMeasure}
+                source={MeasureValueFilterVisualizationSimpleMeasureSRC}
             />
         </div>
     </div>
