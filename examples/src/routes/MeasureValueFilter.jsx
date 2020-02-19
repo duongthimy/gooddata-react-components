@@ -7,6 +7,12 @@ import MeasureValueFilterShownInPercentageExample from "../components/MeasureVal
 import MeasureValueFilterStackedToHundredPercentExample from "../components/MeasureValueFilterStackedToHundredPercentExample";
 import MeasureValueFilterFormattedInPercentageExample from "../components/MeasureValueFilterFormattedInPercentageExample";
 import MeasureValueFilterVisualizationSimpleMeasure from "../components/MeasureValueFilterVisualizationSimpleMeasure";
+import MeasureValueFilterVisualizationShowinpercentMeasure from "../components/MeasureValueFilterVisualizationShowinpercentMeasure";
+import MeasureValueFilterVisualizationStacktopercentMeasure from "../components/MeasureValueFilterVisualizationStacktopercentMeasure";
+import MeasureValueFilterFormattedinpercentMeasure from "../components/MeasureValueFilterFormattedinpercentMeasure";
+import MeasureValueFilterAMChangeMeasure from "../components/MeasureValueFilterAMChangeMeasure";
+import MeasueValueFilterAppliedFilterMeasure from "../components/MeasueValueFilterAppliedFilterMeasure";
+import MeasureValueFilterApplyConfig from "../components/MeasureValueFilterApplyConfig";
 
 import MeasureValueFilterExampleSRC from "!raw-loader!../components/MeasureValueFilterExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import MeasureValueFilterShownInPercentageExampleSRC from "!raw-loader!../components/MeasureValueFilterShownInPercentageExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
@@ -67,14 +73,37 @@ export const MeasureValueFilter = () => (
         </div>
         <h2>Measure value filter Visualization Simple Measure</h2>
         <p>
-            Can embed Visualization component which applying measure value filter into Live Example
-            successfully
+            embed Visualization component which applying measure value filter into Live Example successfully
         </p>
         <div className="s-measure-value-filter-example-5">
             <ExampleWithSource
                 for={MeasureValueFilterVisualizationSimpleMeasure}
                 source={MeasureValueFilterVisualizationSimpleMeasureSRC}
             />
+        </div>
+        <h2>Measure value filter Visualization Show in % Measure</h2>
+        <div className="s-measure-value-filter-example-5">
+            <ExampleWithSource for={MeasureValueFilterVisualizationShowinpercentMeasure} />
+        </div>
+        <h2>Measure value filter Visualization Stack to 100% Measure</h2>
+        <div className="s-measure-value-filter-example-5">
+            <ExampleWithSource for={MeasureValueFilterVisualizationStacktopercentMeasure} />
+        </div>
+        <h2>Measure value filter Visualization Formatted in % Measure</h2>
+        <div className="s-measure-value-filter-example-5">
+            <ExampleWithSource for={MeasureValueFilterFormattedinpercentMeasure} />
+        </div>
+        <h2>Measure value filter Visualization AM Change % Measure And Derived AM Change % Measure</h2>
+        <div className="s-measure-value-filter-example-5">
+            <ExampleWithSource for={MeasureValueFilterAMChangeMeasure} />
+        </div>
+        <h2>Measure value filter Visualization Measure which applies Local and Global filter measure</h2>
+        <div className="s-measure-value-filter-example-5">
+            <ExampleWithSource for={MeasueValueFilterAppliedFilterMeasure} />
+        </div>
+        <h2>Measure value filter Visualization Measure which applies Configuration</h2>
+        <div className="s-measure-value-filter-example-5">
+            <ExampleWithSource for={MeasureValueFilterApplyConfig} />
         </div>
     </div>
 );
