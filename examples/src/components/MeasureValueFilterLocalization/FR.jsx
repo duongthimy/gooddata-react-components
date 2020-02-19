@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { PivotTable, Model, MeasureValueFilterDropdown } from "@gooddata/react-components";
 
 import "@gooddata/react-components/styles/css/main.css";
-import { projectId, franchisedSalesIdentifier, locationNameDisplayFormIdentifier } from "../utils/fixtures";
+import { projectId, franchisedSalesIdentifier, locationNameDisplayFormIdentifier } from "../../utils/fixtures";
 
 const franchisedSalesMeasure = Model.measure(franchisedSalesIdentifier)
     .localIdentifier("franchisedSales")
