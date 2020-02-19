@@ -10,6 +10,15 @@ import MeasureValueFilterDropdownPercentageExampleSRC from "!raw-loader!../compo
 import MeasureValueFilterDropdownRatioExample from "../components/MeasureValueFilterDropdownRatioExample";
 import MeasureValueFilterDropdownRatioExampleSRC from "!raw-loader!../components/MeasureValueFilterDropdownRatioExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 
+import MeasureValueFilterLocalizationDE from "../components/MeasureValueFilterLocalization/DE";
+import MeasureValueFilterLocalizationES from "../components/MeasureValueFilterLocalization/ES";
+import MeasureValueFilterLocalizationFR from "../components/MeasureValueFilterLocalization/FR";
+import MeasureValueFilterLocalizationJP from "../components/MeasureValueFilterLocalization/JP";
+import MeasureValueFilterLocalizationNL from "../components/MeasureValueFilterLocalization/NL";
+import MeasureValueFilterLocalizationBR from "../components/MeasureValueFilterLocalization/BR";
+import MeasureValueFilterLocalizationPT from "../components/MeasureValueFilterLocalization/PT";
+import MeasureValueFilterLocalizationHans from "../components/MeasureValueFilterLocalization/Hans";
+
 export const MeasureValueFilterComponent = () => (
     <div>
         <h1>Measure Value Filter Component</h1>
@@ -42,6 +51,39 @@ export const MeasureValueFilterComponent = () => (
                 for={MeasureValueFilterDropdownRatioExample}
                 source={MeasureValueFilterDropdownRatioExampleSRC}
             />
+        </div>
+        <h1>Measure Value Filter Localization</h1>
+        <p>This example shows the dropdown component for Localization de-DE.</p>
+        <div className="s-measure-value-filter-example-3">
+            <ExampleWithSource for={MeasureValueFilterLocalizationDE} />
+        </div>
+        <p>This example shows the dropdown component for Localization es-ES.</p>
+        <div className="s-measure-value-filter-example-3">
+            <ExampleWithSource for={MeasureValueFilterLocalizationES} />
+        </div>
+        <p>This example shows the dropdown component for Localization fr-FR.</p>
+        <div className="s-measure-value-filter-example-3">
+            <ExampleWithSource for={MeasureValueFilterLocalizationFR} />
+        </div>
+        <p>This example shows the dropdown component for Localization ja-JP.</p>
+        <div className="s-measure-value-filter-example-3">
+            <ExampleWithSource for={MeasureValueFilterLocalizationJP} />
+        </div>
+        <p>This example shows the dropdown component for Localization nl-NL.</p>
+        <div className="s-measure-value-filter-example-3">
+            <ExampleWithSource for={MeasureValueFilterLocalizationNL} />
+        </div>
+        <p>This example shows the dropdown component for Localization pt-BR.</p>
+        <div className="s-measure-value-filter-example-3">
+            <ExampleWithSource for={MeasureValueFilterLocalizationBR} />
+        </div>
+        <p>This example shows the dropdown component for Localization pt-PT.</p>
+        <div className="s-measure-value-filter-example-3">
+            <ExampleWithSource for={MeasureValueFilterLocalizationPT} />
+        </div>
+        <p>This example shows the dropdown component for Localization zh-Hans.</p>
+        <div className="s-measure-value-filter-example-3">
+            <ExampleWithSource for={MeasureValueFilterLocalizationHans} />
         </div>
     </div>
 );
