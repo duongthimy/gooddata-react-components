@@ -3,16 +3,16 @@ import React, { Component } from "react";
 import "@gooddata/react-components/styles/css/main.css";
 import { Visualization } from "@gooddata/react-components";
 
-import { projectId, mvfvisualizationsimplemeasureuri } from "../utils/fixtures";
+import { projectId, mvfvisualizationAMchangemeasureuri } from "../utils/fixtures";
 
-export class MeasureValueFilterVisualizationSimpleMeasure extends Component {
+export class MeasureValueFilterAMChangeMeasure extends Component {
     render() {
         return (
             <div style={{ height: 300 }} className="s-visualization-bubble">
-                <Visualization projectId={projectId} uri={mvfvisualizationsimplemeasureuri} />
+                <Visualization projectId={projectId} uri={mvfvisualizationAMchangemeasureuri} />
             </div>
         );
     }
 }
 
-export default MeasureValueFilterVisualizationSimpleMeasure;
+export default MeasureValueFilterAMChangeMeasure;
