@@ -81,7 +81,7 @@ export const MeasureValueFilterComponent = () => (
         <div className="s-measure-value-filter-example-3">
             <ExampleWithSource for={MeasureValueFilterLocalizationPT} />
         </div>
-        <p>This example shows the dropdown component for Localization zh-Hans.</p>
+        <p>This example shows the dropdown component for Localization zh-Hans..</p>
         <div className="s-measure-value-filter-example-3">
             <ExampleWithSource for={MeasureValueFilterLocalizationHans} />
         </div>
