@@ -17,6 +17,7 @@ import VisualizationDonutExample from "../components/VisualizationDonutByIdentif
 import VisualizationTreemapExample from "../components/VisualizationTreemapByIdentifierExample";
 import VisualizationHeatmapExample from "../components/VisualizationHeatmapByIdentifierExample";
 import VisualizationComboExample from "../components/VisualizationComboByIdentifierExample";
+import VisualizationXirrExample from "../components/VisualizationXirrByIdentifierExample";
 
 import VisualizationColumnChartExampleSRC from "!raw-loader!../components/VisualizationColumnChartByIdentifierExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import VisualizationTableExampleSRC from "!raw-loader!../components/VisualizationTableByIdentifierExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
@@ -32,6 +33,7 @@ import VisualizationDonutExampleSRC from "!raw-loader!../components/Visualizatio
 import VisualizationTreemapExampleSRC from "!raw-loader!../components/VisualizationTreemapByIdentifierExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import VisualizationHeatmapExampleSRC from "!raw-loader!../components/VisualizationHeatmapByIdentifierExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import VisualizationComboExampleSRC from "!raw-loader!../components/VisualizationComboByIdentifierExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
+import VisualizationXirrExampleSRC from "!raw-loader!../components/VisualizationXirrByIdentifierExample";
 
 export const VisualizationByIdentifier = () => (
     <div>
@@ -117,6 +119,11 @@ export const VisualizationByIdentifier = () => (
 
         <h2 id="combo">Combo Chart</h2>
         <ExampleWithSource for={VisualizationComboExample} source={VisualizationComboExampleSRC} />
+
+        <hr className="separator" />
+
+        <h2 id="combo">Xirr</h2>
+        <ExampleWithSource for={VisualizationXirrExample} source={VisualizationXirrExampleSRC} />
     </div>
 );
 
