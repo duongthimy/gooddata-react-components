@@ -1,4 +1,4 @@
-// (C) 2007-2019 GoodData Corporation
+// (C) 2007-2020 GoodData Corporation
 import React, { Component } from "react";
 import { AttributeFilter, Model } from "@gooddata/react-components";
 
@@ -26,6 +26,7 @@ export class AttributeFilterComponentExample extends Component {
                         projectId={projectId}
                         identifier={employeeNameIdentifier}
                         onApply={this.onApply}
+                        locale="pt-BR"
                     />
                 </div>
                 <div>attribute defined by display form uri</div>

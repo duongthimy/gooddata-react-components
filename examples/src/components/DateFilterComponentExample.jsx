@@ -1,4 +1,4 @@
-// (C) 2007-2019 GoodData Corporation
+// (C) 2007-2020 GoodData Corporation
 import React, { Component } from "react";
 import { DateFilter } from "@gooddata/react-components";
 import "@gooddata/react-components/styles/css/dateFilter.css";
@@ -216,6 +216,7 @@ export class DateFilterComponentExample extends Component {
                     onCancel={this.onCancel}
                     onOpen={this.onOpen}
                     onClose={this.onClose}
+                    locale="pt-BR"
                 />
             </div>
         );

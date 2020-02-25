@@ -1,4 +1,4 @@
-// (C) 2007-2019 GoodData Corporation
+// (C) 2007-2020 GoodData Corporation
 import React from "react";
 
 import ExampleWithSource from "../components/utils/ExampleWithSource";
@@ -18,6 +18,9 @@ import HeatmapExample from "../components/HeatmapExample";
 import TableExample from "../components/TableExample";
 import HeadlineExample from "../components/HeadlineExample";
 import KpiExample from "../components/KpiExample";
+import ComboChartLocalizationExample from "../components/ComboChartLocalizationExample";
+import TableLocalizationExample from "../components/TableLocalizationExample";
+import HeadlineLocalizationExample from "../components/HeadlineLocalizationExample";
 
 import BarChartExampleSRC from "!raw-loader!../components/BarChartExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import ColumnChartExampleSRC from "!raw-loader!../components/ColumnChartExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
@@ -34,6 +37,9 @@ import HeatmapExampleSRC from "!raw-loader!../components/HeatmapExample"; // esl
 import TableExampleSRC from "!raw-loader!../components/TableExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import HeadlineExampleSRC from "!raw-loader!../components/HeadlineExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import KpiExampleSRC from "!raw-loader!../components/KpiExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
+import ComboChartLocalizationExampleSRC from "!raw-loader!../components/ComboChartLocalizationExample";
+import TableLocalizationExampleSRC from "!raw-loader!../components/TableLocalizationExample";
+import HeadlineLocalizationExampleSRC from "!raw-loader!../components/HeadlineLocalizationExample";
 
 export const BasicComponents = () => (
     <div>
@@ -76,6 +82,9 @@ export const BasicComponents = () => (
         <h2 id="combo-chart">Combo chart</h2>
         <ExampleWithSource for={ComboChartExample} source={ComboChartExampleSRC} />
 
+        <h2 id="combo-chart">Combo chart Localization</h2>
+        <ExampleWithSource for={ComboChartLocalizationExample} source={ComboChartLocalizationExampleSRC} />
+
         <h2 id="scatter-plot">Scatter plot</h2>
         <ExampleWithSource for={ScatterPlotExample} source={ScatterPlotExampleSRC} />
 
@@ -93,8 +102,14 @@ export const BasicComponents = () => (
         <h2 id="table">Table</h2>
         <ExampleWithSource for={TableExample} source={TableExampleSRC} />
 
+        <h2 id="table">Table Localization</h2>
+        <ExampleWithSource for={TableLocalizationExample} source={TableLocalizationExampleSRC} />
+
         <h2 id="table">Headline</h2>
         <ExampleWithSource for={HeadlineExample} source={HeadlineExampleSRC} />
+
+        <h2 id="table">Headline Localization</h2>
+        <ExampleWithSource for={HeadlineLocalizationExample} source={HeadlineLocalizationExampleSRC} />
 
         <h2 id="kpi">KPI</h2>
         <p>

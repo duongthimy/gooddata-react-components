@@ -1,4 +1,4 @@
-// (C) 2007-2018 GoodData Corporation
+// (C) 2007-2020 GoodData Corporation
 import React from "react";
 
 import ExampleWithSource from "../components/utils/ExampleWithSource";
@@ -17,6 +17,7 @@ import VisualizationTreemapExample from "../components/VisualizationTreemapByUri
 import VisualizationHeatmapExample from "../components/VisualizationHeatmapByUriExample";
 import VisualizationComboExample from "../components/VisualizationComboByUriExample";
 import VisualizationXirrExample from "../components/VisualizationXirrByUriExample";
+import VisualizationComboLocalizationExample from "../components/VisualizationComboLocalizationExample";
 
 import VisualizationColumnChartByUriExampleSRC from "!raw-loader!../components/VisualizationColumnChartByUriExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import VisualizationTableExampleSRC from "!raw-loader!../components/VisualizationTableByUriExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
@@ -32,6 +33,7 @@ import VisualizationTreemapExampleSRC from "!raw-loader!../components/Visualizat
 import VisualizationHeatmapExampleSRC from "!raw-loader!../components/VisualizationHeatmapByUriExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import VisualizationComboExampleSRC from "!raw-loader!../components/VisualizationComboByUriExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import VisualizationXirrExampleSRC from "!raw-loader!../components/VisualizationXirrByUriExample";
+import VisualizationComboLocalizationExampleSRC from "!raw-loader!../components/VisualizationComboLocalizationExample";
 
 export const VisualizationByUri = () => (
     <div>
@@ -108,6 +110,12 @@ export const VisualizationByUri = () => (
 
         <h2 id="combo">Combo Chart</h2>
         <ExampleWithSource for={VisualizationComboExample} source={VisualizationComboExampleSRC} />
+
+        <h2 id="combo">Combo Chart Localization</h2>
+        <ExampleWithSource
+            for={VisualizationComboLocalizationExample}
+            source={VisualizationComboLocalizationExampleSRC}
+        />
 
         <hr className="separator" />
 
