@@ -2,12 +2,12 @@
 import React from "react";
 
 import ExampleWithSource from "../components/utils/ExampleWithSource";
-import MeasureValueFilterExample from "../components/MeasureValueFilterExample";
+import MeasureValueFilterTreatNullvalueExample from "../components/MeasureValueFilterTreatNullvalueExample";
 import MeasureValueFilterShownInPercentageExample from "../components/MeasureValueFilterShownInPercentageExample";
 import MeasureValueFilterStackedToHundredPercentExample from "../components/MeasureValueFilterStackedToHundredPercentExample";
 import MeasureValueFilterFormattedInPercentageExample from "../components/MeasureValueFilterFormattedInPercentageExample";
 
-import MeasureValueFilterExampleSRC from "!raw-loader!../components/MeasureValueFilterExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
+import MeasureValueFilterTreatNullvalueExampleSRC from "!raw-loader!../components/MeasureValueFilterTreatNullvalueExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import MeasureValueFilterShownInPercentageExampleSRC from "!raw-loader!../components/MeasureValueFilterShownInPercentageExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import MeasureValueFilterStackedToHundredPercentExampleSRC from "!raw-loader!../components/MeasureValueFilterStackedToHundredPercentExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
 import MeasureValueFilterFormattedInPercentageExampleSRC from "!raw-loader!../components/MeasureValueFilterFormattedInPercentageExample"; // eslint-disable-line import/no-webpack-loader-syntax, import/no-unresolved, import/extensions, import/first
@@ -23,7 +23,7 @@ export const MVFTreatNullValueComponent = () => (
         <h2>Comparison and range filters</h2>
         <p>This is the example of filtering the visualization by either one or two measure values:</p>
         <div className="s-measure-value-filter-example-1">
-            <ExampleWithSource for={MeasureValueFilterExample} source={MeasureValueFilterExampleSRC} />
+            <ExampleWithSource for={MeasureValueFilterTreatNullvalueExample} source={MeasureValueFilterTreatNullvalueExampleSRC} />
         </div>
         <h2>Filter by a measure value shown in %</h2>
         <p>
