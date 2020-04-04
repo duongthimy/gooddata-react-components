@@ -31,6 +31,7 @@ import VisualizationByUri from "./VisualizationByUri";
 import VisualizationByIdentifier from "./VisualizationByIdentifier";
 import MeasureValueFilter from "./MeasureValueFilter";
 import MeasureValueFilterComponent from "./MeasureValueFilterComponent";
+import MVFTreatNullValueComponent from "./MVFTreatNullValueComponent";
 import DateFilter from "./DateFilter";
 import OnDrillHandling from "./OnDrillHandling";
 import Xirr from "./Xirr";
@@ -118,6 +119,11 @@ export const measureValueFilterRoutes = [
         title: "Measure Value Filter Component",
         Component: MeasureValueFilterComponent,
     },
+    {
+        path: "/measure-value-filter/treatnullaszerocomponent",
+        title: "MVF Treat null value as Zeros",
+        Component: MVFTreatNullValueComponent,
+    }
 ];
 
 export const nextRoutes = [

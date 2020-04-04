@@ -93,3 +93,17 @@ export const totalSalesLocalIdentifier = "c11c27a0b0314a83bfe5b64ab9de7b89";
 export const totalCostsLocalIdentifier = "aaQHncjzfrtR";
 export const numberOfRestaurantsIdentifier = "aawAq8YqhM3o";
 export const averageRestaurantDailyCostsIdentifier = "aaQJzQzoeKwZ";
+
+
+// MVF treat null value project My_Live example
+export const numberofdateFact = "fact.csv_4dates.numberofdate";
+export const numberofdate_sum = "aaTeVAAfb5hb";
+export const numberofdate_sum_nullformat = "aade8jLAejZK"; // [=NULL] [red] Empty; #,##0.00
+export const numberofdate_min = "aaseZN3Sb6HT";
+export const numberofdate_max = "aaje4fcAdgOr";
+export const numberofdate_avg = "aake4fcAdgOr";
+export const numberFact = "fact.csv_4dates.number";
+export const name = "label.csv_4dates.name";
+export const stt = "label.csv_4dates.stt";
+export const date1_Day = "date_1.date.mmddyyyy";
+export const date1_Year = "date_1.aag81lMifn6q";
