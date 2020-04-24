@@ -20,7 +20,7 @@ const backendShortcuts = {
     developer: "https://developer.na.gooddata.com",
 };
 
-const defaultBackend = backendShortcuts.developer;
+const defaultBackend = backendShortcuts.stg3;
 
 function SimplestProgressPlugin() {
     let lastPercent = -10;
@@ -44,7 +44,7 @@ module.exports = async (env, argv) => {
     const proxy = {
         "/gdc": {
             changeOrigin: true,
-            cookieDomainRewrite: "localhost",
+            cookieDomainRewrite: "192.168.1.151",
             secure: false,
             target: backendUrl,
             headers: {
@@ -56,7 +56,7 @@ module.exports = async (env, argv) => {
             },
         },
         "/api": {
-            target: "http://localhost:3009",
+            target: "http://192.168.1.151:8833",
             secure: false,
             onProxyReq: req => {
                 console.log("proxy", "/gdc", req.path); // eslint-disable-line no-console
@@ -65,7 +65,7 @@ module.exports = async (env, argv) => {
                     req.setHeader("content-length", "0");
                 }
                 // eslint-disable-next-line no-console
-                console.log(`Proxy ${req.path} to http://localhost:3009 (use: yarn examples-server)`);
+                console.log(`Proxy ${req.path} to http://192.168.1.151:8833 (use: yarn examples-server)`);
             },
         },
     };
