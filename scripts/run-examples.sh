@@ -19,4 +19,4 @@ fi
 
 
 echo "$ webpack-dev-server --https $PARAMS"
-webpack-dev-server --hot --https --host 192.169.1.151 --port 8833
+webpack-dev-server --hot --https $PARAMS
